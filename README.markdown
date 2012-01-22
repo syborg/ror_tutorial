@@ -1,5 +1,6 @@
 MME 21/1/2012
-Tutorial de rails de http://ruby.railstutorial.org/ruby-on-rails-tutorial-book
+Tutorial de rails a partir del Cap 3 
+(http://ruby.railstutorial.org/ruby-on-rails-tutorial-book)
 
 == Welcome to Rails
 
