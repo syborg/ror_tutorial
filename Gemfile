@@ -35,4 +35,9 @@ gem 'therubyracer'
 group :test do
   # Pretty printed test output
   gem 'turn', '0.8.2', :require => false
+  # MME per a fer tests automatics quan s'han modificat els arxius
+  #gem 'autotest', '~>4.4.3'
+  #gem 'autotest-rails-pure', '~>4.1.2'
+  #gem 'redgreen'
+  #gem 'autotest-notification'
 end
