@@ -6,8 +6,6 @@ class PagesControllerTest < ActionController::TestCase
     @base_title = "Ruby on Rails Tutorial Sample App | "
   end
 
-
-
   test "should get home" do
     get :home
     assert_response :success
@@ -15,7 +13,7 @@ class PagesControllerTest < ActionController::TestCase
 
   test "home should have the right title" do
     get :home
-    assert_select "title", "Ruby on Rails Tutorial Sample App | Home"
+    assert_select "title", @base_title+"Home"
   end
 
   test "should get contact" do
@@ -47,6 +45,5 @@ class PagesControllerTest < ActionController::TestCase
     get :help
     assert_select "title", @base_title+"Help"
   end
-
 
 end

@@ -16,6 +16,11 @@ class UsersControllerTest < ActionController::TestCase
     assert_response :success
   end
 
+  test "new should have the right title" do
+    get :new
+    assert_select "title", :text=>/.*Sign Up$/
+  end
+
   test "should create user" do
     assert_difference('User.count') do
       post :create, user: @user.attributes
