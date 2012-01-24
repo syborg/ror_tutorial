@@ -23,4 +23,14 @@ class LayoutLinksTest < ActionDispatch::IntegrationTest
     assert_select "title", :text=>/.*Help$/
   end
 
+  test "should have the right links on the layout" do
+    get root_path
+    assert_response :success
+    assert_select 'title', :text=>/.*Home$/
+    
+    # Comprovem que el nombre de links total al menu i al footer
+    assert_select 'nav ul li', 7
+
+  end
+
 end
