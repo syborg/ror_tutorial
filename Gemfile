@@ -32,6 +32,15 @@ gem 'therubyracer'
 # To use debugger
 # gem 'ruby-debug19', :require => 'ruby-debug'
 
+group :development do
+  # MME afegim annotate per a incloure comentaris que documenten la estructura de la BBDD.
+  # $ bundle exec annotate --position before
+  gem 'annotate', '~>2.4.1.beta'
+  # MME crea grafic
+  # $ bundle viz
+  gem 'ruby-graphviz'
+end
+
 group :test do
   # Pretty printed test output
   gem 'turn', '0.8.2', :require => false
