@@ -6,7 +6,8 @@ gem 'rails', '3.1.3'
 # gem 'rails',     :git => 'git://github.com/rails/rails.git'
 
 gem 'sqlite3'
-
+# MME classe que manega els gravatars globals
+gem 'gravatar_image_tag', '1.0.0.pre2'
 
 # Gems used only for assets and not required
 # in production environments by default.
@@ -44,9 +45,6 @@ end
 group :test do
   # Pretty printed test output
   gem 'turn', '0.8.2', :require => false
-  # MME per a fer tests automatics quan s'han modificat els arxius
-  #gem 'autotest', '~>4.4.3'
-  #gem 'autotest-rails-pure', '~>4.1.2'
-  #gem 'redgreen'
-  #gem 'autotest-notification'
+  # MME enables context tot tests
+  gem 'shoulda-context'
 end

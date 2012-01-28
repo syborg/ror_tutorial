@@ -14,7 +14,11 @@
 one:
   name: pep
   email: pep@peponcio.net
+#  password: papitu
+#  password_confirmation: papitu
 
 two:
   name: pip
   email: pip@peponcio.com
+#  password: papitu
+#  password_confirmation: papitu

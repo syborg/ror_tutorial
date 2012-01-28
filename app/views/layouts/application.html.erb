@@ -12,16 +12,9 @@
         <%= yield %>
       </section>
       <%= render 'layouts/footer' %>
-
       <% if Rails.env.development? %>
-        <div class = "notice round prepend-1">
-          <h4>Params</h4>
-          <%= debug(params) %>
-          <h4>Session</h4>
-          <%= debug(session) %>
-        </div>  
+        <%= render 'layouts/debug_info' %>
       <% end %>
-
     </div>
   </body>
 </html>

@@ -1,9 +1,6 @@
 require 'test_helper'
 
 class UsersControllerTest < ActionController::TestCase
-  setup do
-    @user = users(:one)
-  end
 
   test "should get index" do
     get :index
@@ -11,15 +8,53 @@ class UsersControllerTest < ActionController::TestCase
     assert_not_nil assigns(:users)
   end
 
-  test "should get new" do
-    get :new
-    assert_response :success
+  context "GET 'new'" do
+
+    should "be successful" do
+      get 'new'
+      assert_response :success
+    end
+    
+    should "have the right title" do
+      get 'new'
+      assert_select "title", :text=>/.*Sign Up$/
+    end
+    
   end
 
-  test "new should have the right title" do
-    get :new
-    assert_select "title", :text=>/.*Sign Up$/
+  context "GET 'show'" do
+
+    setup do
+      @user = users(:one) # MME introdueix a @users la entrada :one que hi ha a la fixture users.yml
+    end
+
+    should "be successful" do
+      get :show, :id => @user
+      assert_response :success
+    end
+
+    should "find the right user" do
+      get :show, :id => @user
+      assert_equal @user, assigns(:user)  # MME assigns es un hash que conte les instance variables del controller que arriven al view
+    end
+
+    should "have the right title" do
+      get :show, :id => @user
+      assert_select "title", :content => @user.name
+    end
+
+    should "include the user's name" do
+      get :show, :id => @user
+      assert_select "h1", :content => @user.name
+    end
+
+    should "have a profile image" do
+      get :show, :id => @user
+      assert_select "h1>img", :class => "gravatar"
+    end
+        
   end
+
 
   test "should create user" do
     assert_difference('User.count') do
@@ -50,57 +85,6 @@ class UsersControllerTest < ActionController::TestCase
     end
 
     assert_redirected_to users_path
-  end
-
-  # MME nous tests
-
-  test "should create a new instance given attributes" do
-    assert User.create :name=>"User Example",:email=>"user_example@email.com"
-  end
-
-  test "should require a name" do
-    user = User.new(:name => "", :email => "mhartl@example.com")
-    assert ! user.save, "name buid"
-  end
-
-  test "should require a mail address" do
-    user = User.new(:name => "pepe", :email => "")
-    assert ! user.save, "email buid"
-  end
-
-  test "should not have a long name" do
-    user = User.new(:name => "a" * 51, :email => "mhartl@example.com")
-    assert ! user.save, "name massa llarg"
-  end
-
-  test "should accept valid email addresses" do
-    addresses = %w[user@foo.com THE_USER@foo.bar.org first.last@foo.jp]
-    addresses.each do |address|
-      user = User.new(:name => "pepe",:email => address)
-      assert user.save, "#{address} not accepted"
-    end
-  end
-
-  test "should reject invalid email addresses" do
-    addresses = %w[user@foo,com user_at_foo.org example.user@foo.]
-    addresses.each do |address|
-      user = User.new(:name => "pepe",:email => address)
-      assert ! user.save, "#{address} accepted"
-    end
-  end
-
-  test "should reject duplicate email addresses" do
-    attr = {:name => "pep", :email => "pep@gmail.com"}
-    User.create! attr
-    user = User.new(attr)
-    assert ! user.save, "email duplicated"
-  end
-
-  test "should reject email addresses identical up to case" do
-    attr = {:name => "pep", :email => "pep@gmail.com"}
-    User.create! attr.merge(:email => "pep@gmail.com".upcase)
-    user = User.new(attr)
-    assert ! user.save, "email duplicated"
   end
 
 end

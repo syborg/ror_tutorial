@@ -1,6 +1,10 @@
 MME 21/1/2012
+
 Tutorial de rails a partir del Cap 3 
 (http://ruby.railstutorial.org/ruby-on-rails-tutorial-book)
+
+Notes:
+Els tests m'els adapto amb Unit::Test + shoulda-context
 
 == Welcome to Rails
 
