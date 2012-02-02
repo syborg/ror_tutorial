@@ -8,9 +8,16 @@
   <body>
     <div class="container">
       <%= render 'layouts/header' %>
+      
       <section class="round">
+        <% if flash.any? %>
+          <% flash.each do |key, value| %>
+            <div class="flash <%= key %>"><%= value %></div>
+          <% end %>
+        <% end %>
         <%= yield %>
       </section>
+
       <%= render 'layouts/footer' %>
       <% if Rails.env.development? %>
         <%= render 'layouts/debug_info' %>

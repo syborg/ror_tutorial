@@ -1,7 +1,7 @@
 <br />
 <div class = "notice round prepend-1">
   <div class='info'>
-  	<%= print_debug_expressions "root_url+image_path('googleyeyes.png')" %>
+  	<%= print_debug_expressions "Rails.env.inspect"%>
   </div>
   <h6>Params</h6>
   <span class="small">params hash is used to pass objects from view to controller</span>
@@ -12,4 +12,7 @@
   <h6>Assigns</h6>
   <span class="small">assigns hash is used to pass instance vars from controller to views</span>
   <%= debug(assigns) %>
+  <h6>Response</h6>
+  <span class="small">hash amb tota la informacio de la resposta</span>
+  <%= debug(response) %>
 </div>  

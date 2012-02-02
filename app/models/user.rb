@@ -29,10 +29,10 @@ class User < ActiveRecord::Base
 					  :uniqueness => { :case_sensitive => false}
 
 	validates :password, :presence => true,
-                         :confirmation => true,	# crea un atribut password_confirmation i a la vegad confirma que sigui igual que password
+                         :confirmation => true,	# crea un atribut password_confirmation i a la vegada confirma que sigui igual que password
                          :length => { :within => 6..40 }
 
-    validates :password_confirmation, :presence => true	# MME aixo exigigeix que al crear es passi un :password_confirmation, doncs amb nomes
+    # validates :password_confirmation, :presence => true	# MME aixo exigigeix que al crear es passi un :password_confirmation, doncs amb nomes
     													#	  l'anterior validator sol, pot crearse un usuari si no es passa :password_confirmation
 					 
 	before_save :encrypt_password

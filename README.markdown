@@ -4,7 +4,7 @@ Tutorial de rails a partir del Cap 3
 (http://ruby.railstutorial.org/ruby-on-rails-tutorial-book)
 
 Notes:
-Els tests m'els adapto amb Unit::Test + shoulda-context
+Els tests m'els adapto amb Unit::Test + shoulda-context + capibara
 
 == Welcome to Rails
 

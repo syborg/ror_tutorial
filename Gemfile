@@ -37,14 +37,27 @@ group :development do
   # MME afegim annotate per a incloure comentaris que documenten la estructura de la BBDD.
   # $ bundle exec annotate --position before
   gem 'annotate', '~>2.4.1.beta'
-  # MME crea grafic
+  # MME crea grafic de dependencies dels gems i el mostra
   # $ bundle viz
+  # $ display gem_graph.png
   gem 'ruby-graphviz'
 end
 
 group :test do
   # Pretty printed test output
   gem 'turn', '0.8.2', :require => false
-  # MME enables context tot tests
+  # MME enables context to tests
   gem 'shoulda-context'
+  # MME easy integration tests with capybara
+  gem 'capybara'
+  gem 'launchy'
+  gem 'database_cleaner'
+  # MME integration tests with webrat
+  gem 'webrat'
+  # MME continuous testing (detecta canvis i reexecuta tests)
+  # (veure http://railscasts.com/episodes/264-guard)
+  # bundle exec guard
+  gem 'rb-inotify'
+  gem 'guard-test'
+  gem 'guard-livereload'
 end

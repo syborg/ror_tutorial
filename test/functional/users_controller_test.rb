@@ -2,12 +2,6 @@ require 'test_helper'
 
 class UsersControllerTest < ActionController::TestCase
 
-  test "should get index" do
-    get :index
-    assert_response :success
-    assert_not_nil assigns(:users)
-  end
-
   context "GET 'new'" do
 
     should "be successful" do
@@ -55,18 +49,62 @@ class UsersControllerTest < ActionController::TestCase
         
   end
 
+  context "POST 'create'" do
 
-  test "should create user" do
-    assert_difference('User.count') do
-      post :create, user: @user.attributes
+    context "failure" do
+      
+      setup do
+        @attr = { :name => "", :email => "", :password => "",
+                  :password_confirmation => "" }
+      end
+
+      should "not create a user" do
+        assert_no_difference 'User.count' do
+          post :create, :user => @attr
+        end
+      end
+      
+      should "have the right title" do
+        post :create, :user => @attr
+        assert_select "title", :content => "Sign Up"
+      end
+          
+      should "render  the 'new' page" do
+        post :create, :user => @attr
+        assert_template 'new'
+      end
     end
 
-    assert_redirected_to user_path(assigns(:user))
+    context "success" do
+    
+      setup do
+        @attr = { :name => "New User", :email => "user@example.com",
+                  :password => "foobar", :password_confirmation => "foobar" }
+      end
+
+      should "create a user" do
+        assert_difference 'User.count', 1 do
+          post :create, :user => @attr
+        end
+      end
+            
+      should "redirect to the user show page" do
+        post :create, :user => @attr
+        assert_redirected_to user_path(assigns(:user))
+      end
+
+      should "have a welcome message" do
+        post :create, :user => @attr
+        assert_match flash[:success], /welcome to the sample app/i
+      end
+    end
+
   end
 
-  test "should show user" do
-    get :show, id: @user.to_param
+  test "should get index" do
+    get :index
     assert_response :success
+    assert_not_nil assigns(:users)
   end
 
   test "should get edit" do
