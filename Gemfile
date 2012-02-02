@@ -51,9 +51,6 @@ group :test do
   # MME easy integration tests with capybara
   gem 'capybara'
   gem 'launchy'
-  gem 'database_cleaner'
-  # MME integration tests with webrat
-  gem 'webrat'
   # MME continuous testing (detecta canvis i reexecuta tests)
   # (veure http://railscasts.com/episodes/264-guard)
   # bundle exec guard

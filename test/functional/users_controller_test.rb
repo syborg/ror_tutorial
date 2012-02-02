@@ -14,6 +14,13 @@ class UsersControllerTest < ActionController::TestCase
       assert_select "title", :text=>/.*Sign Up$/
     end
     
+    %w{name email password password_confirmation}.each do |fld|
+      should "have a #{fld} field" do
+        get :new
+        assert_select "label", :for => "user_#{fld}"
+      end
+    end
+
   end
 
   context "GET 'show'" do
