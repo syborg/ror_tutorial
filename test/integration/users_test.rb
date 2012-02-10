@@ -27,12 +27,11 @@ class UsersTest < ActionDispatch::IntegrationTest
           fill_in 'Password', :with => @attr[:password]
           fill_in 'Confirmation', :with => @attr[:password_confirmation]
           click_button 'Sign Up!'
-          assert_equal '/signup', current_path  # ens retorna a users/new, que significa que 
+          #assert_equal current_path, '/users/new'  # ens retorna a users/new, que significa que 
           #assert_template 'users/new'    no s'ha creat l'usuari
-          page.has_selector? "div#error_explanation" # comprovem que conte missatges d'error
+          assert page.has_selector?("div#error_explanation") # comprovem que conte missatges d'error
         end
       end
-
 
     end
 
@@ -48,6 +47,37 @@ class UsersTest < ActionDispatch::IntegrationTest
           assert_template 'users/show'
           assert_select "div.flash.success", :content=>'welcome'
         end
+      end
+    end
+  end
+
+  context "sign in/out" do
+
+    context "failure" do
+      should "not sign a user in" do
+        visit signin_path
+        fill_in :email,    :with => ""
+        fill_in :password, :with => ""
+        click_link "Sign in"
+        assert page.has_selector?("div.flash.error", :content => "Invalid")
+      end
+    end
+
+    context "success" do
+
+      setup do
+        @attr = {email: "test@email.tst",  password: "testpwd"}
+        @user=User.create! @attr.merge({name: "test_user", password_confirmation: "testpwd"})
+      end
+
+      should "sign a user in and out" do
+        visit signin_path
+        fill_in :email,    :with => @user.email
+        fill_in :password, :with => @user.password
+        click_button "Sign in"
+        assert @controller.signed_in?
+        click_link "Sign out"
+        assert !@controller.signed_in?
       end
 
     end

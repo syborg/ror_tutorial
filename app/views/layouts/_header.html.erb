@@ -4,7 +4,13 @@
     <ul>
       <li><%= link_to "Home", root_path %></li>
       <li><%= link_to "Help", help_path %></li>
-      <li><%= link_to "Sign in", '#' %></li>
+      <li>
+        <% unless signed_in? %>
+          <%= link_to "Sign in", signin_path %>
+        <% else %>
+          <%= link_to "Sign out", signout_path, :method=>:delete %>
+        <% end %>
+      </li>
     </ul>
   </nav>
 </header>

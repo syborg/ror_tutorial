@@ -10,4 +10,7 @@ class ActiveSupport::TestCase
   fixtures :all
 
   # Add more helper methods to be used by all tests here...
+  def test_sign_in(user)
+    @controller.sign_in(user)
+  end
 end

@@ -48,26 +48,31 @@ class User < ActiveRecord::Base
 		end
 	end
 
+	# Torna l'User del id si el salt es correcte (s'utilitza per les sessions)
+	def self.authenticate_with_salt(id, salt)
+		user = find_by_id(id) 
+		(user && user.salt == salt) ? user : nil
+	end
+
 	# verifica si el password correspon a l'User
 	def has_password?(submited_pwd)
 		self.encrypted_password == encrypt(submited_pwd)
 	end
 
-
 	# FUNCIONS PRIVADES
 	private
 
-	def encrypt_password
-		self.salt = make_salt unless has_password?(password)	# self.salt resets everytime user changes its password 
-		self.encrypted_password = encrypt(password)	# password refers to self.password
-	end
+		def encrypt_password
+			self.salt = make_salt unless has_password?(password)	# self.salt resets everytime user changes its password 
+			self.encrypted_password = encrypt(password)	# password refers to self.password
+		end
 
-	def make_salt
-		Digest::SHA2.hexdigest "#{Time.now.utc}--#{password}"
-	end
+		def make_salt
+			Digest::SHA2.hexdigest "#{Time.now.utc}--#{password}"
+		end
 
-	def encrypt(str)
-		Digest::SHA2.hexdigest "#{salt}--#{str}"
-	end
+		def encrypt(str)
+			Digest::SHA2.hexdigest "#{salt}--#{str}"
+		end
 
 end

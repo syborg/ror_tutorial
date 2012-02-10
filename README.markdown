@@ -4,7 +4,8 @@ Tutorial de rails a partir del Cap 3
 (http://ruby.railstutorial.org/ruby-on-rails-tutorial-book)
 
 Notes:
-Els tests m'els adapto amb Unit::Test + shoulda-context + capibara
+- Els tests m'els adapto amb Unit::Test + shoulda-context + capibara
+- Als capitols 8 i 9 es fa la autenticacio. Observar que no es crea una sessio (que inclogui entre d'altres el user_id) vinculada a un session_id que viatja en un cookie. Esmolt mes simple: Es genera un cookie amb el parell [:id, :salt] encriptats i signats i a cada acces es mira si son correctes. 
 
 == Welcome to Rails
 

@@ -2,6 +2,8 @@
 <html>
   <head>
     <title><%= title %></title>
+    <!-- MME el js es necessari per a que funcionin les confirmacions al esborrar per exemple -->
+    <%= javascript_include_tag "application" %>
     <%= csrf_meta_tag %>
     <%= render 'layouts/stylesheets' %>
   </head>
@@ -22,6 +24,11 @@
       <% if Rails.env.development? %>
         <%= render 'layouts/debug_info' %>
       <% end %>
-    </div>
+    </div>  
+    <!-- Exemple de script: llegeix les cookies -->
+    <p>
+    <strong> Mostra les teves cookies </strong>
+    <script>document.write(document.cookie);</script>
+    </p>
   </body>
 </html>

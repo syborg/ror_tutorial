@@ -73,7 +73,7 @@ class UsersControllerTest < ActionController::TestCase
       
       should "have the right title" do
         post :create, :user => @attr
-        assert_select "title", :content => "Sign Up"
+        assert_select "title", :text => /Sign Up/
       end
           
       should "render  the 'new' page" do
@@ -100,36 +100,44 @@ class UsersControllerTest < ActionController::TestCase
         assert_redirected_to user_path(assigns(:user))
       end
 
-      should "have a welcome message" do
-        post :create, :user => @attr
-        assert_match flash[:success], /welcome to the sample app/i
+      should "sign in the user" do
+         post :create, :user => @attr
+         assert @controller.signed_in?
       end
     end
 
   end
 
-  test "should get index" do
-    get :index
-    assert_response :success
-    assert_not_nil assigns(:users)
-  end
+  context "DELETE 'destroy'" do
 
-  test "should get edit" do
-    get :edit, id: @user.to_param
-    assert_response :success
-  end
-
-  test "should update user" do
-    put :update, id: @user.to_param, user: @user.attributes
-    assert_redirected_to user_path(assigns(:user))
-  end
-
-  test "should destroy user" do
-    assert_difference('User.count', -1) do
-      delete :destroy, id: @user.to_param
+    setup do
+      @attr = {email: "test@email.tst",  password: "testpwd"}
+      @user=User.create! @attr.merge({name: "test_user", password_confirmation: "testpwd"})
     end
 
-    assert_redirected_to users_path
+    should "destroy user" do
+      assert_difference 'User.count', -1 do
+        delete :destroy, :id => @user
+      end
+      assert_redirected_to users_path
+    end
+
   end
+
+  # test "should get index" do
+  #   get :index
+  #   assert_response :success
+  #   assert_not_nil assigns(:users)
+  # end
+
+  # test "should get edit" do
+  #   get :edit, id: @user.to_param
+  #   assert_response :success
+  # end
+
+  # test "should update user" do
+  #   put :update, id: @user.to_param, user: @user.attributes
+  #   assert_redirected_to user_path(assigns(:user))
+  # end
 
 end
