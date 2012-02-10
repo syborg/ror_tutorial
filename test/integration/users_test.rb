@@ -1,6 +1,7 @@
 require 'integration_test_helper'
 
 class UsersTest < ActionDispatch::IntegrationTest
+
   fixtures :all
 
   context "signup" do
@@ -54,13 +55,12 @@ class UsersTest < ActionDispatch::IntegrationTest
   context "sign in/out" do
 
     context "failure" do
+
       should "not sign a user in" do
-        visit signin_path
-        fill_in :email,    :with => ""
-        fill_in :password, :with => ""
-        click_link "Sign in"
-        assert page.has_selector?("div.flash.error", :content => "Invalid")
+        integration_signin User.new
+        assert page.has_selector?("div.flash", :text => "Invalid")
       end
+
     end
 
     context "success" do
@@ -71,13 +71,10 @@ class UsersTest < ActionDispatch::IntegrationTest
       end
 
       should "sign a user in and out" do
-        visit signin_path
-        fill_in :email,    :with => @user.email
-        fill_in :password, :with => @user.password
-        click_button "Sign in"
-        assert @controller.signed_in?
+        integration_signin @user
+        assert page.has_selector?("div.flash.success"), "Welcome not found!"
         click_link "Sign out"
-        assert !@controller.signed_in?
+        assert page.has_selector?("div.flash", :text => "Bye Babe"), "Bye Babe not found!"
       end
 
     end
