@@ -16,10 +16,16 @@
 one:
   name: pep
   email: pep@peponcio.net
+  encrypted_password: bec7a80a5f16a9b237fe33718ebb09d78fc0fdc6ffcbaefac88e2b49f178ff4d
+  salt: 5401984b8a64c0bcc276bdb7b8084d7b0b2f2b49c9212e95b67f89b6f861cba0
 
 two:
   name: pip
   email: pip@peponcio.com
+
+three:
+  name: leontopodio
+  email: leo@rxata.xfl
 
 wrong_user:
   name: xaxau

@@ -1,6 +1,19 @@
 <h1>Editing user</h1>
 
-<%= render 'form' %>
+<table class="profile" summary="Profile information">
+  <tr>
+    <td class="main">
+      <h1>
+        <%= gravatar_for @user %>
+        <%= @user.name %>
+        <p><a href="http://gravatar.com/emails" class="petit_link" target="_blank">canvia avatar</a></p>
+      </h1>
+    </td>
+    <td class="sidebar round">
+      <%= render 'form' %>
+    </td>
+  </tr>
+</table>
 
 <%= link_to 'Show', @user %> |
 <%= link_to 'Back', users_path %>

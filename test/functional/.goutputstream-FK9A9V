@@ -124,40 +124,38 @@ class UsersControllerTest < ActionController::TestCase
       end
     end
 
-    context "as a signed" do
+    context "as a signed non admin user" do
 
       setup do
-        @admin_usr=users(:one)
-        test_sign_in(@admin_usr)
+        admin_usr=users(:one)
+        test_sign_in(admin_usr)
       end
-      
-      context "non-admin user" do
 
-        should "protect the page" do
+      should "protect the page" do
+        delete :destroy, :id=>@user.id
+        assert_redirected_to root_path
+      end
+
+    end
+
+    context "as a signed admin user" do
+
+      setup do
+        admin_usr=users(:one)
+        test_sign_in(admin_usr)
+        admin_usr.toggle!(:admin)
+      end
+
+      should "destroy the user" do
+        assert_difference 'User.count', -1 do
           delete :destroy, :id=>@user.id
-          assert_redirected_to root_path
-        end
-
-      end
-
-      context "as a signed admin user" do
-
-        setup do
-          @admin_usr.toggle!(:admin)
-        end
-
-        should "destroy the user" do
-          assert_difference 'User.count', -1 do
-            delete :destroy, :id=>@user.id
-          end
-        end
-
-        should "redirect to the users page" do
-          delete :destroy, :id=>@user.id
-          assert_redirected_to users_path
         end
       end
 
+      should "redirect to the users page" do
+        delete :destroy, :id=>@user.id
+        assert_redirected_to users_path
+      end
     end
 
   end
@@ -293,11 +291,10 @@ class UsersControllerTest < ActionController::TestCase
     context "for signed-in users" do
 
       setup do
-        @user = users(:one)
+        @user = test_sign_in(users(:one))
         second = users(:two)
         third = users(:three)
         @users = [@user, second, third]
-        test_sign_in(@user)
         1.upto(10) do |n|
           @users << User.create( name: "User #{n}",
             email: "user#{n}@email.com",
@@ -319,7 +316,7 @@ class UsersControllerTest < ActionController::TestCase
       should "have an element for each user" do
         get :index
         @users[0..2].each do |user|
-          assert_select("ul.users li a", :text => user.name)
+          assert_select("li", :text => user.name)
         end
       end
 

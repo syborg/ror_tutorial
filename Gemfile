@@ -8,6 +8,8 @@ gem 'rails', '3.1.3'
 gem 'sqlite3'
 # MME classe que manega els gravatars globals
 gem 'gravatar_image_tag', '1.0.0.pre2'
+# MME per a paginar els llistats llargs
+gem 'will_paginate'
 
 # Gems used only for assets and not required
 # in production environments by default.
@@ -41,6 +43,8 @@ group :development do
   # $ bundle viz
   # $ display gem_graph.png
   gem 'ruby-graphviz'
+  # MME to create fictious users
+  gem 'faker'
 end
 
 group :test do

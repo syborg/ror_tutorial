@@ -18,6 +18,6 @@
     <%= f.password_field :password_confirmation %>
   </div>
   <div class="actions">
-    <%= f.submit "Sign Up!" %>
+    <%= f.submit (controller.action_name=="new" ? "Sign Up!" : "Update!") %>
   </div>
 <% end %>

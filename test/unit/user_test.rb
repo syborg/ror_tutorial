@@ -154,4 +154,25 @@ class UserTest < ActiveSupport::TestCase
 			
 	end
 
+  context "admin attribute" do
+
+    setup do
+      @user = User.create!(@attr)
+    end
+
+    should "respond to admin" do
+      assert @user.respond_to?("admin?")
+    end
+
+    should "not be an admin by default" do
+      assert !@user.admin?
+    end
+
+    should "be convertible to an admin" do
+      @user.toggle!(:admin)
+      assert @user.admin?
+    end
+  end
+
+
 end

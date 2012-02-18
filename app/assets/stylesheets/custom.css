@@ -137,7 +137,7 @@ td.sidebar {
 
 .profile img.gravatar {
   border: 1px solid #999;
-  margin-bottom: -15px;
+  margin-bottom: -15px; 
 }
 
 /* User signup form */
@@ -187,4 +187,24 @@ div.field, div.actions {
 #error_explanation ul li {
   font-size: 12px;
   list-style: square;
+}
+
+/* petites pels llistats d'usuaris */
+ul.users {
+  margin-top: 1em;
+}
+
+.users li {
+  list-style: none;
+}
+
+.users img.gravatar {
+  margin-top: 8px;
+  margin-bottom: -8px; 
+}
+
+/* MME altres */
+a.petit_link {
+  font-size: 10px;
+  margin: 1px;
 }
