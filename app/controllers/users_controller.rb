@@ -6,12 +6,18 @@ class UsersController < ApplicationController
   before_filter :correct_user, :only => [:edit, :update]
   # MME nomes permetem esborrar als administradors
   before_filter :admin_user, :only => :destroy
+  # MME Signed-in users have no reason to access the new and create actions
+  before_filter :signed_in_user, :only => [:new, :create]
+
+  # MME will_paginate: valor per defecte de items per pagina
+  ITEMS_PER_PAGE = 10
 
   # GET /users
   # GET /users.json
   def index
     @title = "All users"
-    @users = User.paginate(:page=>params[:page], :per_page=>10)
+    @users = User.paginate(:page=>params[:page], :per_page => ITEMS_PER_PAGE)
+    session[:idx_last_page]=params[:page]
 
     respond_to do |format|
       format.html # index.html.erb
@@ -96,11 +102,16 @@ class UsersController < ApplicationController
   # DELETE /users/1
   # DELETE /users/1.json
   def destroy
-    User.find(params[:id]).destroy
-    flash[:success] = "User destroyed"
-
+    user=User.find(params[:id])
+    if current_user?(user)
+      flash[:error] = "Admin user can't commit suicide"
+    else
+      user.destroy
+      flash[:success] = "User destroyed"
+    end
+    
     respond_to do |format|
-      format.html { redirect_to users_url }
+      format.html { redirect_to users_url(:page=>session[:idx_last_page]) }
       format.json { head :ok }
     end
 
@@ -123,6 +134,13 @@ class UsersController < ApplicationController
     def admin_user
       unless current_user && current_user.admin?
         flash[:notice]="Nomes poden esborrar els usuaris admin"
+        redirect_to root_path
+      end
+    end
+
+    def signed_in_user
+      if signed_in?
+        flash[:notice]="#{current_user.name} ... you've already Signed Up!"
         redirect_to root_path
       end
     end

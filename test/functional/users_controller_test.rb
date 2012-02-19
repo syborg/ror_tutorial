@@ -140,7 +140,7 @@ class UsersControllerTest < ActionController::TestCase
 
       end
 
-      context "as a signed admin user" do
+      context "admin user" do
 
         setup do
           @admin_usr.toggle!(:admin)
@@ -149,6 +149,12 @@ class UsersControllerTest < ActionController::TestCase
         should "destroy the user" do
           assert_difference 'User.count', -1 do
             delete :destroy, :id=>@user.id
+          end
+        end
+
+        should "not destroy himself" do
+          assert_no_difference 'User.count' do
+            delete :destroy, :id=>@admin_usr.id
           end
         end
 
@@ -330,6 +336,29 @@ class UsersControllerTest < ActionController::TestCase
         assert_select("a[href=?]", %r{.*\/users\?page=2}, :text => "2")
         assert_select("a[href=?]", %r{.*\/users\?page=2}, :text => /Next.*/)
       end
+
+      context "not admin users" do
+
+        should "not have delete links" do
+          get :index
+          assert_select "ul.users a[data-method=delete]", 0
+        end
+
+      end
+
+      context "admin users" do
+
+        setup do
+          @user.toggle!(:admin)
+        end
+
+        should "have delete links" do
+          get :index
+          assert_select "ul.users a[data-method=delete]"
+        end
+
+      end
+    
 
     end
   end

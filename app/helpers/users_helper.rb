@@ -1,6 +1,6 @@
 module UsersHelper
 
-  # 
+  # MME torna un gravatar o, en el seu defcte, un avatar local aleatori
   def gravatar_for(user, options = {})
    	options ||={}
     default_img_url=root_url+url_for("assets/avatars/#{random_avatar}")
