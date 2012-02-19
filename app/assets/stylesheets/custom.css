@@ -208,3 +208,14 @@ a.petit_link {
   font-size: 10px;
   margin: 1px;
 }
+
+/* MME posem barra de will-paginate una mica mes xula */
+
+div.pagination * {
+  border: 1px solid gray;
+  padding: 4px;
+}
+
+div.pagination a:hover,a:active {
+  border: 2px solid cyan;
+}
