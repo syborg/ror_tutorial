@@ -18,7 +18,7 @@ class FriendlyForwardingTest < ActionDispatch::IntegrationTest
       fill_in :password, :with => @attr[:password]
       click_button "Sign in"
       # The test follows the redirect again, this time to users/edit.
-      assert page.has_field?("title", :with => "Edit"), "is not edit page"
+      assert page.has_field?("h1", :with => "Editing user"), "is not edit page"
     end
   end
 end

@@ -29,6 +29,7 @@ class UsersController < ApplicationController
   # GET /users/1.json
   def show
     @user = User.find(params[:id])
+    @microposts = @user.microposts.paginate(:page=>params[:page], :per_page => 5)
     @title = "Show '#{@user.name}'"
 
     respond_to do |format|
@@ -118,10 +119,6 @@ class UsersController < ApplicationController
   end
 
   private
-
-    def authenticate
-      deny_access unless signed_in?
-    end
 
     def correct_user
       @user ||= User.find(params[:id])

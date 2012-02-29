@@ -55,10 +55,13 @@ group :test do
   # MME easy integration tests with capybara
   gem 'capybara'
   gem 'launchy'
+  gem 'database_cleaner'
   # MME continuous testing (detecta canvis i reexecuta tests)
   # (veure http://railscasts.com/episodes/264-guard)
   # bundle exec guard
   gem 'rb-inotify'
   gem 'guard-test'
   gem 'guard-livereload'
+  # gem 'ruby-gntp'
+  gem 'libnotify'
 end

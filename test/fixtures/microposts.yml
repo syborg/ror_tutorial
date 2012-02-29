@@ -12,9 +12,26 @@
 # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
 
 one:
-  content: MyString
-  user_id: 1
+  content: Aixo es un micropost
+# MME per associar a users observar que no uso user_id, si no user i el label de users.yml que correspongui
+  user: one 
+  created_at: <%= 2.week.ago.to_s(:db) %>
+  updated_at: <%= 1.week.ago.to_s(:db) %>
 
 two:
-  content: MyString
-  user_id: 1
+  content: Aquest es un altre micropost
+  user: one
+  created_at: <%= 2.hour.ago.to_s(:db) %>
+  updated_at: <%= 1.hour.ago.to_s(:db) %>
+
+three:
+  content: el tercer micropost
+  user: one
+  created_at: <%= 2.day.ago.to_s(:db) %>
+  updated_at: <%= 1.day.ago.to_s(:db) %>
+
+four:
+  content: el tercer micropost
+  user: two
+  created_at: <%= 2.minute.ago.to_s(:db) %>
+  updated_at: <%= 1.minute.ago.to_s(:db) %>

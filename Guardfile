@@ -1,6 +1,9 @@
 # A sample Guardfile
 # More info at https://github.com/guard/guard#readme
 
+# Si no vols notidicacions posa :off. Per defecte fa anar :growl (del MacOS)
+notification :libnotify, :timeout => 5, :transient => true, :append => false
+
 guard 'livereload' do
   watch(%r{app/.+\.(erb|haml)})
   watch(%r{app/helpers/.+\.rb})

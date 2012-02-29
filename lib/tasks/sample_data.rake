@@ -1,6 +1,7 @@
 namespace :db do
   desc "Fill database with sample data"
   task :populate => :environment do
+    # primer els User
     Rake::Task['db:reset'].invoke
     [["Marcel Massana", "xaxaupua@gmail.com", "collonets"],
     ["Pep Massana", "fitxia@gmail.com", "collonets"],
@@ -23,5 +24,14 @@ namespace :db do
                    :password => password,
                    :password_confirmation => password)
     end
+    # despres els Micropost dels 5 primers
+    User.find(:all, limit: 5).each do |usr|
+      1.upto(10).each do
+        mp=usr.microposts.build(:content=>Faker::Lorem.words(10))
+        mp.save!
+      end
+    end
+
+
   end
 end

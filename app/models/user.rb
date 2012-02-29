@@ -37,7 +37,8 @@ class User < ActiveRecord::Base
 					 
 	before_save :encrypt_password
 
-	has_many :microposts
+	# MME a l'esborrar un User s'esborren tb els seus Micropost
+	has_many :microposts, :dependent => :destroy
 
 	# Torna l'User de l'email si el password es correcte
 	def self.authenticate(email, submited_pwd)
@@ -57,6 +58,10 @@ class User < ActiveRecord::Base
 	# verifica si el password correspon a l'User
 	def has_password?(submited_pwd)
 		self.encrypted_password == encrypt(submited_pwd)
+	end
+
+	def feed
+		microposts
 	end
 
 	# FUNCIONS PRIVADES

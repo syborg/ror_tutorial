@@ -174,5 +174,50 @@ class UserTest < ActiveSupport::TestCase
     end
   end
 
+  context "micropost associations" do
+
+    setup do
+      @user = users(:one)
+      @mp1 = microposts(:one)
+      @mp2 = microposts(:two)
+      @mp3 = microposts(:three)
+    end
+
+    should "have a microposts attribute" do
+      assert_respond_to @user, :microposts
+    end
+
+    should "have the right microposts in the right order" do
+      assert_equal @user.microposts, [@mp2, @mp3, @mp1]
+    end
+
+    should "destroy associated microposts" do
+      cnt = - @user.microposts.count
+      assert_difference 'Micropost.count', cnt do
+        @user.destroy
+      end
+    end
+
+    context "status feed" do
+
+      should "have a feed" do
+        assert_respond_to @user, :feed
+      end
+
+      should "include the user's microposts" do
+        assert @user.feed.include?(@mp1)
+        assert @user.feed.include?(@mp2)
+        assert @user.feed.include?(@mp3)
+      end
+
+      should "not include a different user's microposts" do
+        # :four no pertany al user :one (veure les fixtures)
+        mp4 = microposts(:four)
+        assert !@user.feed.include?(mp4)
+      end
+
+    end
+
+  end
 
 end

@@ -55,6 +55,14 @@ class UsersControllerTest < ActionController::TestCase
       get :show, :id => @user
       assert_select "h1>img", :class => "gravatar"
     end
+
+    should "show the user's microposts" do
+      mp1 = microposts(:one)
+      mp2 = microposts(:two)
+      get :show, :id => @user
+      assert_select("span.content", :text => mp1.content)
+      assert_select("span.content", :text => mp2.content)
+    end
         
   end
 
@@ -245,54 +253,14 @@ class UsersControllerTest < ActionController::TestCase
     end
   end
 
-  context "authentication of edit/update pages" do
-
-    setup do
-      @user = users(:one)
-    end
-
-    context "for non-signed-in users" do
-
-      should "deny access to 'edit'" do
-        get :edit, :id => @user
-        assert_redirected_to signin_path
-      end
-
-      should "deny access to 'update'" do
-        put :update, :id => @user, :user => {}
-        assert_redirected_to signin_path
-      end
-    end
-
-    context "for wrong signed-in users" do
-
-      setup do
-        wrong_user = users(:two)
-        test_sign_in(wrong_user)
-      end
-
-      should "require matching users for 'edit'" do
-        get :edit, :id => @user
-        assert_redirected_to root_path
-      end
-
-      should "require matching users for 'update'" do
-        put :update, :id => @user, :user => {}
-        assert_redirected_to root_path
-      end
-
-    end
-
-  end
-
-  # edit
+  # index
   context "GET 'index'" do
 
     context "for non-signed-in users" do
       should "deny access" do
         get :index
         assert_redirected_to signin_path
-        assert_match /.*signin.*/, flash[:notice]
+        assert_match /.*signegi-in.*/, flash[:notice]
       end
     end
 
@@ -362,5 +330,46 @@ class UsersControllerTest < ActionController::TestCase
 
     end
   end
-  
+
+  context "authentication of edit/update pages" do
+
+    setup do
+      @user = users(:one)
+    end
+
+    context "for non-signed-in users" do
+
+      should "deny access to 'edit'" do
+        get :edit, :id => @user
+        assert_redirected_to signin_path
+      end
+
+      should "deny access to 'update'" do
+        put :update, :id => @user, :user => {}
+        assert_redirected_to signin_path
+      end
+    end
+
+    context "for wrong signed-in users" do
+
+      setup do
+        wrong_user = users(:two)
+        test_sign_in(wrong_user)
+      end
+
+      should "require matching users for 'edit'" do
+        get :edit, :id => @user
+        assert_redirected_to root_path
+      end
+
+      should "require matching users for 'update'" do
+        put :update, :id => @user, :user => {}
+        assert_redirected_to root_path
+      end
+
+    end
+
+  end
+
+ 
 end

@@ -31,9 +31,13 @@ module SessionsHelper
     current_user == user
   end
 
+  def authenticate
+    deny_access unless signed_in?
+  end
+
   def deny_access
     store_location
-    redirect_to signin_path, :notice => "Si us plau signin per accedir"
+    redirect_to signin_path, :notice => "Si us plau signegi-in per a accedir"
   end
 
   def redirect_back_or(default)
