@@ -3,9 +3,11 @@
     <%= render :partial=>'shared/error_messages', :object => micropost_form.errors %>
   <% end %>
   <div class="field">
-    <%= f.text_area :content %>
+    <%= f.text_area :content, :onkeyup=>'charsleft(this)'  %>
   </div>
   <div class="actions">
     <%= f.submit "Submit"%>
   </div>
+  <!-- S'actualitza amb el numero de caracters escrits -->
+  <div id="charNum">0</id>
 <% end %>
