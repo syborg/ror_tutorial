@@ -2,9 +2,37 @@ require 'test_helper'
 
 class PagesControllerTest < ActionController::TestCase
   
-  def setup
+  setup do
     @base_title = "Ruby on Rails Tutorial Sample App | "
   end
+
+  context "GET 'home'" do
+
+    context "signed in" do
+
+      setup do
+        @user=users(:one)
+        test_sign_in(@user)
+      end
+
+      context "admin users" do
+
+        setup do
+          @user.toggle!(:admin)
+        end
+
+        should "show the user's microposts count" do
+          get :home
+          cnt = @user.microposts.count
+          unit = cnt==1 ? "micropost": "microposts"
+          text = "#{cnt} #{unit}"
+          assert_select("span.microposts", :text => text)
+        end
+      end
+    end
+
+  end
+
 
   test "should get home" do
     get :home

@@ -35,6 +35,18 @@ class MicropostsController < ApplicationController
     end
   end
 
+  # GET /users/:id/microposts
+  # GET /users/:id/microposts.json
+  def index
+    @user=User.find_by_id(params[:user_id])
+    @microposts=@user.microposts.paginate(:page => params[:page], :per_page => 5)
+    respond_to do |format|
+      format.html 
+      format.json { render json: @microposts }
+    end
+
+  end
+
   private
 
     def owner_user

@@ -63,7 +63,26 @@ class UsersControllerTest < ActionController::TestCase
       assert_select("span.content", :text => mp1.content)
       assert_select("span.content", :text => mp2.content)
     end
-        
+
+    should "not enable micropost's delete links" do
+      get :show, :id => @user
+      assert_select "table.microposts td>a", :text => "delete", :count => 0
+    end
+
+    context "as signed in microposts owner" do
+
+      setup do
+        test_sign_in(@user)
+        @user.toggle!(:admin)
+      end
+
+      should "have delete links for microposts" do
+        get :show, :id => @user
+        assert_select "table.microposts td>a", :text => "delete"
+      end
+
+    end
+
   end
 
   context "POST 'create'" do
@@ -326,7 +345,6 @@ class UsersControllerTest < ActionController::TestCase
         end
 
       end
-    
 
     end
   end

@@ -4,6 +4,10 @@ RorTutorial::Application.routes.draw do
   resources :sessions, :only => [:new, :create, :destroy]
   # MME almost all about microposts is done from User pages
   resources :microposts, :only => [:create, :destroy]
+  # MME ex 11.5.7 add route to show all microposts from one user
+  resources :users do
+    resources :microposts, :only => :index
+  end
   
   # MME named routes que simplifiquen les standard (pages/...)
   match '/contact', :to => 'pages#contact'
@@ -16,7 +20,6 @@ RorTutorial::Application.routes.draw do
   match '/signup',  :to => 'users#new'
   match '/signin',  :to => 'sessions#new'
   match '/signout', :to => 'sessions#destroy'
-
 
 
   # The priority is based upon order of creation:

@@ -27,7 +27,7 @@ namespace :db do
     # despres els Micropost dels 5 primers
     User.find(:all, limit: 5).each do |usr|
       1.upto(10).each do
-        mp=usr.microposts.build(:content=>Faker::Lorem.words(10))
+        mp=usr.microposts.build(:content=>Faker::Lorem.sentences(2).join(" "))
         mp.save!
       end
     end
