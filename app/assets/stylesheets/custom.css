@@ -1,3 +1,19 @@
+@import url(http://fonts.googleapis.com/css?family=Fugaz+One|Doppio+One);
+
+body {
+    font-family: 'Doppio One', normal;
+}
+
+.logo {
+    font-family: 'Fugaz One', cursive;
+    font-size: 50px;
+    text-shadow: 6px 4px 4px #aaa;
+    background: #fff;
+    width: 250px;
+    padding-left: 20px;
+    padding-right: 20px;
+}
+
 .container {
   width: 710px;
 }

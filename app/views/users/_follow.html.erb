@@ -1,0 +1,18 @@
+<!-- Crea un boto a partir d'un formulari amb un nou Relationship "efimer" i l'unic camp accessible preomplert i amagat -->
+
+<!-- Vesio AJAX -->
+<%= form_for current_user.relationships.build(:followed_id => @user.id), :remote => true do |f| %>
+  <div><%= f.hidden_field :followed_id %></div>
+  <div class="actions"><%= f.submit "Follow" %></div>
+<% end %>
+
+<!-- Versio normal -->
+<%
+=begin %>
+<%= form_for current_user.relationships.build(:followed_id => @user.id) do |f| %>
+  <!-- el camp amagat correspont a l'atribut hidden_field (l'unic accessible de Relationship) -->
+  <div><%= f.hidden_field :followed_id %></div>
+  <div class="actions"><%= f.submit "Follow" %></div>
+<% end %>
+<%
+=end %>

@@ -4,8 +4,9 @@
         <span class="user_name">
           <%= user_info.name %>
         </span>
-        <span class="microposts">
-          <%= pluralize(user_info.microposts.count, "micropost") %>
-        </span>
       </a>
+      <span class="microposts">
+        <%= pluralize(user_info.microposts.count, "micropost") %>
+      </span><br />
+      <%= render :partial => "shared/stats", :object => user_info %>
     </div>

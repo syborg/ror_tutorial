@@ -1,0 +1,11 @@
+// JQuery
+$("#follow_form").html("<%= escape_javascript(render('users/follow')) %>")
+$("#followers").html('<%= "#{@user.followers.count} followers" %>')
+
+// Prototype
+<%
+=begin %>
+$("follow_form").update("<%= escape_javascript(render('users/follow')) %>")
+$("followers").update('<%= "#{@user.followers.count} followers" %>')
+<%
+=end %>

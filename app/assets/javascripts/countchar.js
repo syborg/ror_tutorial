@@ -12,5 +12,4 @@ function charsleft(val)
     {
         $('#charNum').text(140 - len);
     }
-
-}
+ }

@@ -4,11 +4,20 @@ RorTutorial::Application.routes.draw do
   resources :sessions, :only => [:new, :create, :destroy]
   # MME almost all about microposts is done from User pages
   resources :microposts, :only => [:create, :destroy]
+  # MME s'habiliten dos rutes per accedir als metodes per crear i destruïr relationships
+  resources :relationships, :only => [:create, :destroy]
   # MME ex 11.5.7 add route to show all microposts from one user
   resources :users do
     resources :microposts, :only => :index
   end
-  
+  # MME adds following and followers actions to users (member implies user id, while collection not)
+  # /users/1/following, /users/1/followers
+  resources :users do
+    member do
+      get :following, :followers
+    end
+  end
+
   # MME named routes que simplifiquen les standard (pages/...)
   match '/contact', :to => 'pages#contact'
   match '/about',   :to => 'pages#about'

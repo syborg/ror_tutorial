@@ -9,6 +9,7 @@
 #  updated_at         :datetime
 #  encrypted_password :string(255)
 #  salt               :string(255)
+#  admin              :boolean         default(FALSE)
 #
 
 # MME per a utilitzar les Hash functions
@@ -16,68 +17,112 @@ require 'digest'
 
 class User < ActiveRecord::Base
 
-	attr_accessor :password
+  attr_accessor :password # MME nomes dona acces a la instance var @password que no es guarda a la BBDD
 
-	# MME si es posa, atributs (columnes) als que es podrà accedir via ActiveRecord
-	attr_accessible	:name, :email, :password, :password_confirmation
-	# MME validacions
-	validates :name, :presence => true, 
-					 :length=> {maximum: 50}
+  # MME si es posa, atributs (columnes) als que es podrà accedir via ActiveRecord
+  attr_accessible	:name, :email, :password, :password_confirmation
+  # MME validacions
+  validates :name, :presence => true,
+                   :length=> {maximum: 50}
 
-	validates :email, :presence => true, 
-					  :format => { :with => /\A[\w+\-.]+@[a-z\d\-.]+\.[a-z]+\z/i },
-					  :uniqueness => { :case_sensitive => false}
+  validates :email, :presence => true,
+                    :format => { :with => /\A[\w+\-.]+@[a-z\d\-.]+\.[a-z]+\z/i },
+                    :uniqueness => { :case_sensitive => false}
 
-	validates :password, :presence => true,
-                         :confirmation => true,	# crea un atribut password_confirmation i a la vegada confirma que sigui igual que password
-                         :length => { :within => 6..40 }
+  validates :password, :presence => true,
+                       :confirmation => true,	# crea un atribut password_confirmation i a la vegada confirma que sigui igual que password
+                       :length => { :within => 6..40 }
 
     # validates :password_confirmation, :presence => true	# MME aixo exigigeix que al crear es passi un :password_confirmation, doncs amb nomes
-    													#	  l'anterior validator sol, pot crearse un usuari si no es passa :password_confirmation
-					 
-	before_save :encrypt_password
+                              #	  l'anterior validator sol, pot crearse un usuari si no es passa :password_confirmation
 
-	# MME a l'esborrar un User s'esborren tb els seus Micropost
-	has_many :microposts, :dependent => :destroy
+  before_save :encrypt_password
 
-	# Torna l'User de l'email si el password es correcte
-	def self.authenticate(email, submited_pwd)
-		if usr = find_by_email(email)
-			usr.has_password?(submited_pwd) ? usr : nil
-		else
-			nil
-		end
-	end
+  # MME a l'esborrar un User s'esborren tb els seus Micropost
+  has_many :microposts, :dependent => :destroy
 
-	# Torna l'User del id si el salt es correcte (s'utilitza per les sessions)
-	def self.authenticate_with_salt(id, salt)
-		user = find_by_id(id) 
-		(user && user.salt == salt) ? user : nil
-	end
+  # User com a seguidor (follower)
 
-	# verifica si el password correspon a l'User
-	def has_password?(submited_pwd)
-		self.encrypted_password == encrypt(submited_pwd)
-	end
+  # te molts :relationships apuntant-lo amb la clau follower_id. Si el User s'elimina tots aquests Relationship tambe seran eliminats.
+  has_many :relationships, :foreign_key => "follower_id",
+                           :dependent => :destroy
 
-	def feed
-		microposts
-	end
+  # te molts seguits via :relationships als que s'apunta via :followed_id  (inferit gracies a :followed, que apunta a la vegada als User)
+  has_many :following, :through => :relationships,
+                       :source => :followed
 
-	# FUNCIONS PRIVADES
-	private
+  # User com a seguit (followed)
 
-		def encrypt_password
-			self.salt = make_salt unless has_password?(password)	# self.salt resets everytime user changes its password 
-			self.encrypted_password = encrypt(password)	# password refers to self.password
-		end
+  # te molts :reverse_relationships apuntant-lo amb la clau followed_id. Si el User s'elimina tots aquests Relationship tambe seran eliminats.
+  has_many :reverse_relationships, :class_name => "Relationship",
+                                   :foreign_key => "followed_id",
+                                   :dependent => :destroy
 
-		def make_salt
-			Digest::SHA2.hexdigest "#{Time.now.utc}--#{password}"
-		end
+  # te molts seguidors via :reverse_relationships als que s'apunta via :follower_id  (inferit gracies a :follower, que apunta a la vegada als User)
+  has_many :followers, :through => :reverse_relationships
 
-		def encrypt(str)
-			Digest::SHA2.hexdigest "#{salt}--#{str}"
-		end
+  # Torna els microposts dels usuaris seguits per un user, per exemple:
+  #    usr=User.find(12)
+  #    usr.following_microposts
+  # (no el faig anar finalment: Micropost.from_users_followed_by(user) ho he implementat sense aquests metode perque
+  # em falten els microposts del propi user) 
+  has_many :following_microposts, :through => :following, 
+                                  :source => :microposts
+
+  # Torna l'User de l'email si el password es correcte
+  def self.authenticate(email, submited_pwd)
+    if usr = find_by_email(email)
+      usr.has_password?(submited_pwd) ? usr : nil
+    else
+      nil
+    end
+end
+
+  # Torna l'User del id si el salt es correcte (s'utilitza per les sessions)
+  def self.authenticate_with_salt(id, salt)
+    user = find_by_id(id)
+    (user && user.salt == salt) ? user : nil
+  end
+
+  # verifica si el password correspon a l'User
+  def has_password?(submited_pwd)
+    self.encrypted_password == encrypt(submited_pwd)
+  end
+
+  def feed
+    Micropost.from_users_followed_by self
+    #microposts
+  end
+
+  # Is usr being followed by self?
+  def following? usr
+    following.include? usr
+    # MME segons el tutorial seria
+    #relationships.find_by_followed_id(followed)
+  end
+
+  def follow! usr
+    relationships.create!(:followed_id => usr.id)
+  end
+
+  def unfollow! usr
+    relationships.find_by_followed_id(usr.id).destroy if following?(usr)
+  end
+
+  # FUNCIONS PRIVADES
+  private
+
+    def encrypt_password
+      self.salt = make_salt unless has_password?(password)	# self.salt resets everytime user changes its password
+      self.encrypted_password = encrypt(password)	# password refers to self.password
+    end
+
+    def make_salt
+      Digest::SHA2.hexdigest "#{Time.now.utc}--#{password}"
+    end
+
+    def encrypt(str)
+      Digest::SHA2.hexdigest "#{salt}--#{str}"
+    end
 
 end

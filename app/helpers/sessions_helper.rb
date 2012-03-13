@@ -18,10 +18,12 @@ module SessionsHelper
     !current_user.nil?
   end
 
+  # Assigna el propietari de la sessio
   def current_user=(user)
     @current_user = user
   end
 
+  # Torna el propietari de la sessio
   def current_user
     # Si no s'havia iniciat s'agafa la identificacio que es tenia al cookie "remember_token"
     @current_user ||= user_from_remember_token

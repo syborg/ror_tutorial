@@ -33,11 +33,39 @@ class PagesControllerTest < ActionController::TestCase
 
   end
 
+  context "GET 'home'" do
 
-  test "should get home" do
-    get :home
-    assert_response :success
+    context "when not signed in" do
+
+      setup do
+        get :home
+      end
+
+      should "be successful" do
+        assert_response :success
+      end
+
+      should "have the right title" do
+        assert_select "title", :text=>/.*Home$/
+      end
+    end
+
+    context "when signed in" do
+
+      setup do
+        @user = test_sign_in(users(:one))
+        other_user = users(:two)
+        other_user.follow!(@user)
+        get :home
+      end
+
+      should "have the right follower/following counts" do
+        assert_select "a[href=?]",following_user_path(@user), :text => "0 users"
+        assert_select "a[href=?]",followers_user_path(@user), :text => "1 user"
+      end
+    end
   end
+
 
   test "home should have the right title" do
     get :home

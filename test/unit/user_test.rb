@@ -9,6 +9,7 @@
 #  updated_at         :datetime
 #  encrypted_password :string(255)
 #  salt               :string(255)
+#  admin              :boolean         default(FALSE)
 #
 
 require 'test_helper'
@@ -205,17 +206,89 @@ class UserTest < ActiveSupport::TestCase
       end
 
       should "include the user's microposts" do
-        assert @user.feed.include?(@mp1)
-        assert @user.feed.include?(@mp2)
-        assert @user.feed.include?(@mp3)
+        assert_include @user.feed, @mp1
+        assert_include @user.feed, @mp2
+        assert_include @user.feed, @mp3
       end
 
       should "not include a different user's microposts" do
-        # :four no pertany al user :one (veure les fixtures)
+        # :four no pertany al user :one, si no al :two (veure les fixtures)
         mp4 = microposts(:four)
-        assert !@user.feed.include?(mp4)
+        assert_not_include @user.feed, mp4
       end
 
+      should "include the microposts of followed users" do
+        followed = users(:two)
+        # :four no pertany al user :one, si no al :two (veure les fixtures)
+        mp4=microposts(:four)
+        @user.follow!(followed)
+        assert_include @user.feed, mp4
+      end
+
+    end
+
+
+  end
+
+  context "relationships" do
+
+    setup do
+      @user = User.create!(@attr)
+      @followed = users(:one)
+    end
+
+    should "enable a relationships method" do
+      assert_respond_to @user, :relationships
+    end
+
+    should "enable a following method" do
+      assert_respond_to @user, :following
+    end
+
+    should "enable a following? method" do
+      assert_respond_to @user, :following?
+    end
+
+    should "enable a follow! method" do
+      assert_respond_to @user, :follow!
+    end
+
+    should "enable to follow another user" do
+      @user.follow!(@followed)
+      assert @user.following? @followed
+    end
+
+    should "include the followed user in the following array" do
+      @user.follow!(@followed)
+      assert @user.following.include? @followed
+    end
+
+    should "enable an unfollow! method" do
+      assert_respond_to @followed, :unfollow!
+    end
+
+    should "enable to unfollow a followed user" do
+      @user.follow!(@followed)
+      @user.unfollow!(@followed)
+      assert !@user.following?(@followed)
+    end
+
+    should "enable to assure to unfollow an already unfollowed user" do
+      @user.unfollow!(@followed)
+      assert !@user.following?(@followed)
+    end
+
+    should "have a reverse_relationships method" do
+      assert_respond_to @user, :reverse_relationships
+    end
+
+    should "have a followers method" do
+      assert_respond_to @user, :followers
+    end
+
+    should "include the follower in the followers array" do
+      @user.follow!(@followed)
+      assert @followed.followers.include? @user
     end
 
   end

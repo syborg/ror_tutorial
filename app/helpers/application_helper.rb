@@ -1,10 +1,12 @@
 module ApplicationHelper
 	def title
-		"Ruby on Rails Tutorial Sample App" + (@title ? " | #{@title}" : "")
+		"Rettiwet! Pippo's new cloud app" + (@title ? " | #{@title}" : "")
 	end
 
 	def logo
-		image_tag("logo.png", :alt => "Sample App", :class => "round")
+		# image_tag("logo.png", :alt => "Sample App", :class => "round")
+    # MME fem anar una webfont. Hem de donar-li class="logo round"
+    content_tag :h2, "Rettiwet!", :class => 'logo round'
 	end
 
 	# Dona informacio formatejada de les expessions que se li posin en una llista de strings separada per comes

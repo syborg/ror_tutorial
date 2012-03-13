@@ -213,7 +213,7 @@ class UsersControllerTest < ActionController::TestCase
     end
 
     should "have a Gravatar avatar image" do
-      assert_select "img[src=?]", %r(http\:\/\/gravatar\.com.+)
+      assert_select "img[src=?]", %r(http:\/\/gravatar\.com.+)
     end
 
     should "have a link to change the Gravatar" do
@@ -389,5 +389,39 @@ class UsersControllerTest < ActionController::TestCase
 
   end
 
- 
+  context "follow pages" do
+
+    context "when not signed in" do
+
+      should "protect 'following'" do
+        get :following, :id => 1
+        assert_redirected_to signin_path
+      end
+
+      should "protect 'followers'" do
+        get :followers, :id => 1
+        assert_redirected_to signin_path
+      end
+    end
+
+    context "when signed in" do
+
+      setup do
+        @user = test_sign_in(users(:one))
+        @other_user = users(:two)
+        @user.follow!(@other_user)
+      end
+
+      should "show user following" do
+        get :following, :id => @user
+        assert_select "a[href=?]", user_path(@other_user), :text => @other_user.name
+      end
+
+      should "show user followers" do
+        get :followers, :id => @other_user
+        assert_select "a[href=?]", user_path(@user), :text => @user.name
+      end
+    end
+  end
+
 end

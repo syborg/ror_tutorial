@@ -1,7 +1,7 @@
 class UsersController < ApplicationController
 
-  # MME evitem que usuaris no autenticats puguin editar registres
-  before_filter :authenticate, :only => [:edit, :update, :index, :destroy]
+  # MME Els usuaris no autenticats nomes poden mostrar un usuari i crear una compta
+  before_filter :authenticate, :except => [:show, :new, :create]
   # MME evitem que usuaris no correctes puguin editar altres registres
   before_filter :correct_user, :only => [:edit, :update]
   # MME nomes permetem esborrar als administradors
@@ -10,7 +10,7 @@ class UsersController < ApplicationController
   before_filter :signed_in_user, :only => [:new, :create]
 
   # MME will_paginate: valor per defecte de items per pagina
-  ITEMS_PER_PAGE = 10
+  ITEMS_PER_PAGE = 5
 
   # GET /users
   # GET /users.json
@@ -116,6 +116,30 @@ class UsersController < ApplicationController
       format.json { head :ok }
     end
 
+  end
+
+  # GET /users/1/following
+  # GET /users/1/following.json
+  def following
+    @title = "Following"
+    @user=User.find(params[:id])
+    @other_users=@user.following.paginate(:page=>params[:page], :per_page => 30)
+    respond_to do |format|
+      format.html { render 'show_follow' }
+      format.json { render json: @other_users }
+    end
+  end
+
+  # GET /users/1/followers
+  # GET /users/1/followers.json
+  def followers
+    @title = "Followers"
+    @user=User.find(params[:id])
+    @other_users=@user.followers.paginate(:page=>params[:page], :per_page => 30)
+    respond_to do |format|
+      format.html { render 'show_follow' }
+      format.json { render json: @other_users }
+    end
   end
 
   private
