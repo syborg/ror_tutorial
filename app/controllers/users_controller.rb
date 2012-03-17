@@ -142,6 +142,21 @@ class UsersController < ApplicationController
     end
   end
 
+  # Prepara el formulari de resposta per a enviar un micropost reply a un usuari
+  # GET /users/1/reply
+  # GET /users/1/reply.json
+  def reply
+    @title = "Reply"
+    @user=User.find(params[:id])
+    @micropost=Micropost.new
+    #@micropost = current_user.replies_to @user, nil
+    respond_to do |format|
+      format.html
+      format.json { render json: @micropost }
+    end
+
+  end
+
   private
 
     def correct_user

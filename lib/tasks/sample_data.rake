@@ -14,9 +14,9 @@ def make_users
   ["Pep Massana", "fitxia@gmail.com", "collonets"],
   ["Example User", "example@railstutorial.org", "foobar"]].each do |arr|
     user=User.create!(:name => arr[0],
-               :email => arr[1],
-               :password => arr[2],
-               :password_confirmation => arr[2])
+                     :email => arr[1],
+                     :password => arr[2],
+                     :password_confirmation => arr[2])
     # MME fem aixo perque "user.admin = true" no funcionaria perque
     # al model l'atribut admin no es a la llista "attr_accessible" i
     # per tant no es pot incialitzar en massa

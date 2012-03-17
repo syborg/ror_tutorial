@@ -424,4 +424,45 @@ class UsersControllerTest < ActionController::TestCase
     end
   end
 
+  context "reply users" do
+
+    context "when not signed in" do
+
+      setup do
+        @other_user = users(:two)
+      end
+
+      should "protect 'reply'" do
+        get :reply, :id => @other_user
+        assert_redirected_to signin_path
+      end
+
+    end
+
+    context "when signed in" do
+
+      setup do
+        @user = test_sign_in(users(:one))
+        @replied_user = users(:two)
+        get :reply, :id => @replied_user
+      end
+
+      should "render the 'reply' template" do
+        assert_template 'reply'
+      end
+
+      should "show replied user name" do
+        assert_select "h1.micropost", :text => /.*#{@replied_user.name}/
+      end
+
+      should "include a hidden field within the form" do
+        assert_select "form", 1 do
+          assert_select "input[type=?][value=?]", "hidden", @replied_user.id
+        end
+      end
+
+    end
+
+  end
+
 end

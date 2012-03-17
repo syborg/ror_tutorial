@@ -1,6 +1,9 @@
-<%= form_for(micropost_form) do |f| %>
-  <% if micropost_form.errors.any? %>
-    <%= render :partial=>'shared/error_messages', :object => micropost_form.errors %>
+<%= form_for(micropost) do |f| %>
+  <% if micropost.errors.any? %>
+    <%= render :partial=>'shared/error_messages', :object => micropost.errors %>
+  <% end %>
+  <% if user_replied %>
+    <%= f.hidden_field :in_reply_to, { :value => user_replied.id } %>
   <% end %>
   <div class="field">
     <%= f.text_area :content, :onkeyup=>'charsleft(this)'  %>

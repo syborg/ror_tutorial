@@ -2,11 +2,12 @@
 #
 # Table name: microposts
 #
-#  id         :integer         not null, primary key
-#  content    :string(255)
-#  user_id    :integer
-#  created_at :datetime
-#  updated_at :datetime
+#  id          :integer         not null, primary key
+#  content     :string(255)
+#  user_id     :integer
+#  created_at  :datetime
+#  updated_at  :datetime
+#  in_reply_to :integer
 #
 
 # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html

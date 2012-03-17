@@ -2,11 +2,12 @@
 #
 # Table name: microposts
 #
-#  id         :integer         not null, primary key
-#  content    :string(255)
-#  user_id    :integer
-#  created_at :datetime
-#  updated_at :datetime
+#  id          :integer         not null, primary key
+#  content     :string(255)
+#  user_id     :integer
+#  created_at  :datetime
+#  updated_at  :datetime
+#  in_reply_to :integer
 #
 
 require 'test_helper'
@@ -66,12 +67,12 @@ class MicropostTest < ActiveSupport::TestCase
     end
 
     should "have a from_users_followed_by class method" do
-      assert Micropost.respond_to? :from_users_followed_by
+      assert_respond_to Micropost, :from_users_followed_by
     end
 
     should "respond to paginate" do
       mps = Micropost.from_users_followed_by(@user)
-      assert mps.respond_to? :paginate
+      assert_respond_to mps, :paginate
     end
 
     should "include the followed user's microposts" do
@@ -86,10 +87,29 @@ class MicropostTest < ActiveSupport::TestCase
       assert_include Micropost.from_users_followed_by(@user), @user_post
     end
 
-
     should "not include an unfollowed user's microposts" do
       assert_not_include Micropost.from_users_followed_by(@user), @third_post
     end
   end
-  
+
+  context "replies" do
+
+    setup do
+      @other_user = users(:two)
+    end
+
+    should "be a reply" do
+      mp = @other_user.replies_to @user, "Hi I'm two"
+      assert mp.is_reply?
+    end
+
+    should "not be a reply" do
+      mp = @other_user.microposts.build :content=>"Hi I'm two"
+      assert ! mp.is_reply?
+    end
+
+
+  end
+
+
 end

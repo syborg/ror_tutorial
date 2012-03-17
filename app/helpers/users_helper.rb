@@ -16,6 +16,13 @@ module UsersHelper
     gravatar_image_tag user.email.downcase, options
   end
 
+# MME returns a shortened version for the mail to include in replies
+  def shortened_link_for(user)
+    #link_to "@" + user.email.match(/(.*)@/i)[1] + user.id.to_s, user
+    link_to "@" + user.name.downcase.split.join("_") + user.id.to_s, user
+  end
+
+
   private
 
   	# chooses a random image (png, jpg or gif) from .../avatars directory

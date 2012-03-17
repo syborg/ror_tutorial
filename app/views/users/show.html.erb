@@ -7,7 +7,14 @@
         <%= gravatar_for @user %>
         <%= @user.name %>
       </h1>
-      <%= render 'follow_form' if signed_in? %>
+      <% if signed_in?  %>
+          <table>
+            <tr>
+              <td><%= render 'follow_form' %></td>
+              <td><%= button_to 'Reply', reply_user_path(@user), :method => :get %></td>
+            </tr>
+          </table>
+      <% end %>
       <% unless @user.microposts.empty? %>
         <table class="microposts" summary="User microposts">
           <%= render @microposts %>

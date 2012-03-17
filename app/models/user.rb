@@ -41,6 +41,12 @@ class User < ActiveRecord::Base
   # MME a l'esborrar un User s'esborren tb els seus Micropost
   has_many :microposts, :dependent => :destroy
 
+ # MME Afegim respostes als usuaris
+  has_many :replies, :class_name => 'Micropost',
+                     :foreign_key => "in_reply_to",
+                     :inverse_of => :replied_user,
+                     :dependent => :destroy
+
   # User com a seguidor (follower)
 
   # te molts :relationships apuntant-lo amb la clau follower_id. Si el User s'elimina tots aquests Relationship tambe seran eliminats.
@@ -76,7 +82,7 @@ class User < ActiveRecord::Base
     else
       nil
     end
-end
+  end
 
   # Torna l'User del id si el salt es correcte (s'utilitza per les sessions)
   def self.authenticate_with_salt(id, salt)
@@ -90,8 +96,12 @@ end
   end
 
   def feed
-    Micropost.from_users_followed_by self
-    #microposts
+    #Micropost.from_users_followed_by self
+    # Microposts from
+    #   self
+    #   self.following
+    #   self.replies
+    Micropost.from_users_followed_by_or_in_reply_to self
   end
 
   # Is usr being followed by self?
@@ -107,6 +117,10 @@ end
 
   def unfollow! usr
     relationships.find_by_followed_id(usr.id).destroy if following?(usr)
+  end
+
+  def replies_to(usr, content)
+    microposts.create :content=>content, :in_reply_to=>usr.id
   end
 
   # FUNCIONS PRIVADES

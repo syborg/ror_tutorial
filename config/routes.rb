@@ -14,7 +14,7 @@ RorTutorial::Application.routes.draw do
   # /users/1/following, /users/1/followers
   resources :users do
     member do
-      get :following, :followers
+      get :following, :followers, :reply
     end
   end
 

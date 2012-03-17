@@ -227,6 +227,37 @@ class UserTest < ActiveSupport::TestCase
 
     end
 
+    context "user with replies" do
+
+      setup do
+        @user_two=users(:two)
+        @user_three=users(:three)
+        @reply_to_user = @user_two.replies_to @user, "Hi I'm two"
+        @reply_to_two = @user_three.replies_to @user_two, "Hi I'm three"
+      end
+
+      should "have a replies attribute" do
+        assert_respond_to @user, :replies
+      end
+
+      should "have replies" do
+        assert_include @user.replies, @reply_to_user
+        assert_include @user_two.replies, @reply_to_two
+      end
+
+      should "be replied by replies" do
+        assert_equal @reply_to_user.replied_user, @user
+        assert_equal @reply_to_two.replied_user, @user_two
+      end
+
+      should "delete all its own microposts and replies upon self deletion" do
+        cnt = @user_two.replies.count + @user_two.microposts.count
+        assert_difference "Micropost.count", -cnt do
+          @user_two.destroy
+        end
+      end
+
+    end
 
   end
 
@@ -288,7 +319,7 @@ class UserTest < ActiveSupport::TestCase
 
     should "include the follower in the followers array" do
       @user.follow!(@followed)
-      assert @followed.followers.include? @user
+      assert_include @followed.followers, @user
     end
 
   end
