@@ -2,8 +2,9 @@
   <% if micropost.errors.any? %>
     <%= render :partial=>'shared/error_messages', :object => micropost.errors %>
   <% end %>
-  <% if user_replied %>
-    <%= f.hidden_field :in_reply_to, { :value => user_replied.id } %>
+  <% if receiver %>
+    <%= f.hidden_field :in_reply_to, { :value => receiver.id } %>
+    <%= f.hidden_field :private, { :value => private } %>
   <% end %>
   <div class="field">
     <%= f.text_area :content, :onkeyup=>'charsleft(this)'  %>

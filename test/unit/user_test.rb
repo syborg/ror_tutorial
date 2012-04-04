@@ -259,6 +259,64 @@ class UserTest < ActiveSupport::TestCase
 
     end
 
+    context "user with messages" do
+
+      should "have a messages_to attribute" do
+        assert_respond_to @user, :messages_to
+      end
+
+      should "have a messages_from attribute" do
+        assert_respond_to @user, :messages_from
+      end
+
+      should "have a messages_to_or_from attribute" do
+        assert_respond_to @user, :messages_to_or_from
+      end
+
+      context "having sent a message" do
+
+        setup do
+          @other_user=users(:two)
+          @mss1 = @user.sends_to @other_user, "Hi I'm the user"
+          @mss2 = @other_user.sends_to @user, "Hi I'm the other"
+        end
+
+        should "have messages sent to a recipient in self.messages_to(recipient)" do
+          assert_include @user.messages_to(@other_user), @mss1
+          assert_include @other_user.messages_to(@user), @mss2
+        end
+
+        should "have messages received from a sender in self.messages_from(sender)" do
+          assert_include @user.messages_from(@other_user), @mss2
+          assert_include @other_user.messages_from(@user), @mss1
+        end
+
+        should "not mix messages from and to" do
+          assert_not_include @user.messages_to(@other_user), @mss2
+          assert_not_include @other_user.messages_to(@user), @mss1
+          assert_not_include @user.messages_from(@other_user), @mss1
+          assert_not_include @other_user.messages_from(@user), @mss2
+        end
+
+        should "not mix third user's messages" do
+          third_user=users(:three)
+          mss3 = third_user.sends_to @user, "Hi I'm 3"
+          assert_not_include @user.messages_from(@other_user), mss3
+          assert_not_include @user.messages_to_or_from(@other_user), mss3
+        end
+        
+        should "mix all sent and received messages with another user in messages_to_or_from" do
+          assert_include @user.messages_to_or_from(@other_user), @mss2
+          assert_include @other_user.messages_to_or_from(@user), @mss1
+          assert_include @user.messages_to_or_from(@other_user), @mss1
+          assert_include @other_user.messages_to_or_from(@user), @mss2
+        end
+
+      end
+
+
+    end
+
   end
 
   context "relationships" do

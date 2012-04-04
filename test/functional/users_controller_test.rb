@@ -455,9 +455,56 @@ class UsersControllerTest < ActionController::TestCase
         assert_select "h1.micropost", :text => /.*#{@replied_user.name}/
       end
 
-      should "include a hidden field within the form" do
+      should "include a hidden replied user within the form" do
         assert_select "form", 1 do
           assert_select "input[type=?][value=?]", "hidden", @replied_user.id
+        end
+      end
+
+    end
+
+  end
+
+  context "messages with users" do
+
+    context "when not signed in" do
+
+      setup do
+        @other_user = users(:two)
+      end
+
+      should "protect 'reply'" do
+        get :message, :id => @other_user
+        assert_redirected_to signin_path
+      end
+
+    end
+
+    context "when signed in" do
+
+      setup do
+        @sender = test_sign_in(users(:one))
+        @receiver = users(:two)
+        get :message, :id => @receiver
+      end
+
+      should "render the 'message' template" do
+        assert_template 'message'
+      end
+
+      should "show receiver name" do
+        assert_select "h1.micropost", :text => /.*#{@receiver.name}/
+      end
+
+      should "include a hidden receiver within the form" do
+        assert_select "form", 1 do
+          assert_select "input[type=?][value=?]", "hidden", @receiver.id
+        end
+      end
+
+      should "include a hidden private within the form" do
+        assert_select "form", 1 do
+          assert_select "input[type=?][value=?]", "hidden", true
         end
       end
 

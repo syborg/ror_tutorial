@@ -101,7 +101,7 @@ class User < ActiveRecord::Base
     #   self
     #   self.following
     #   self.replies
-    Micropost.from_users_followed_by_or_in_reply_to self
+    Micropost.not_messages.from_users_followed_by_or_in_reply_to self
   end
 
   # Is usr being followed by self?
@@ -120,8 +120,27 @@ class User < ActiveRecord::Base
   end
 
   def replies_to(usr, content)
-    microposts.create :content=>content, :in_reply_to=>usr.id
+    microposts.create :content=>content, :in_reply_to=>usr.id, :private=>false
   end
+
+  def sends_to(usr, content)
+    microposts.create :content=>content, :in_reply_to=>usr.id, :private=>true
+  end
+
+  def messages_to usr
+    microposts.messages.where(:in_reply_to => usr.id)
+  end
+
+  def messages_from usr
+    usr.microposts.messages.where(:in_reply_to => self.id)
+
+  end
+
+  def messages_to_or_from usr
+    Micropost.messages.between usr, self
+  end
+
+  alias conversation_with messages_to_or_from
 
   # FUNCIONS PRIVADES
   private

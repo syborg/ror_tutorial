@@ -92,24 +92,65 @@ class MicropostTest < ActiveSupport::TestCase
     end
   end
 
-  context "replies" do
+  # MME a message is a reply with private set to true
+  context "replies and messages" do
 
     setup do
       @other_user = users(:two)
     end
 
-    should "be a reply" do
-      mp = @other_user.replies_to @user, "Hi I'm two"
-      assert mp.is_reply?
+    context "a reply" do
+
+      setup do
+        @mp = @other_user.replies_to @user, "Hi I'm two"
+      end
+
+      should "be a reply" do
+        assert @mp.is_reply?
+      end
+
+      should "not be a message" do
+        assert ! @mp.is_message?
+      end
+
     end
 
-    should "not be a reply" do
-      mp = @other_user.microposts.build :content=>"Hi I'm two"
-      assert ! mp.is_reply?
+    context "a estandard micropost" do
+
+      setup do
+        @mp = @other_user.microposts.build :content=>"Hi I'm two"
+      end
+
+      should "not be a reply" do
+        assert ! @mp.is_reply?
+      end
+
+      should "not be a message" do
+        assert ! @mp.is_message?
+      end
+
     end
 
+    context "a message" do
+
+      setup do
+        @mp = @other_user.sends_to @user, "Hi I'm two"
+      end
+
+      should "not be a reply" do
+        assert ! @mp.is_reply?
+      end
+
+      should "be a message" do
+        assert @mp.is_message?
+      end
+
+      should "add a message in microposts" do
+        assert_include Micropost.messages, @mp
+      end
+
+    end
 
   end
-
 
 end

@@ -1,0 +1,30 @@
+<tr>
+  <td class="gravatar">
+    <%= link_to gravatar_for(message_item.user), message_item.user %>
+  </td>
+  <td class="micropost">
+    <span class="user">
+      <%= link_to message_item.user.name, message_item.user %>
+    </span> <br />
+    <span class="content">
+      <% replier = message_item.is_reply? ? (shortened_link_for(message_item.replied_user)+" ") : "" %>
+<%
+=begin %>
+      <% replier = message_item.is_reply? ? (message_item.in_reply_to.to_s + " ") : "" %>
+<%
+=end %>
+      <% txt = message_item.content %>
+      <%= replier + wrap_words(txt) %>
+    </span>
+    <span class="timestamp">
+      Posted <%= time_ago_in_words(message_item.created_at) %> ago.
+    </span>
+  </td>
+  <% if current_user?(message_item.user) %>
+  <td>
+    <%= link_to "delete", message_item, :method => :delete,
+                                     :confirm => "You sure?",
+                                     :title => message_item.content %>
+  </td>
+  <% end %>
+</tr>

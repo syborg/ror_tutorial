@@ -3,7 +3,7 @@
     <td class="main">
       <h1 class="micropost">In reply to <%= @user.name %></h1>
       <!-- MME Si es passen varis arguments a render, els partial dona problemes si no es posa :partial=>'partial'  -->
-      <%= render :partial=>'shared/micropost_form', :locals => { :micropost => @micropost, :user_replied => @user } %>
+      <%= render :partial=>'shared/micropost_form', :locals => { :micropost => @micropost, :receiver => @user, :private => false } %>
     </td>
     <td class="sidebar round">
       <%= render :partial=>'shared/user_info', :object => current_user %>

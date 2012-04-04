@@ -29,7 +29,7 @@ class UsersController < ApplicationController
   # GET /users/1.json
   def show
     @user = User.find(params[:id])
-    @microposts = @user.microposts.paginate(:page=>params[:page], :per_page => 5)
+    @microposts = @user.microposts.not_messages.paginate(:page=>params[:page], :per_page => 5)
     @title = "Show '#{@user.name}'"
 
     respond_to do |format|
@@ -149,13 +149,28 @@ class UsersController < ApplicationController
     @title = "Reply"
     @user=User.find(params[:id])
     @micropost=Micropost.new
-    #@micropost = current_user.replies_to @user, nil
     respond_to do |format|
       format.html
       format.json { render json: @micropost }
     end
 
   end
+
+  # Prepara el formulari de resposta per a enviar un micropost reply a un usuari
+  # GET /users/1/reply
+  # GET /users/1/reply.json
+  def message
+    @title = "Message"
+    @user=User.find(params[:id])
+    @messages = current_user.messages_to_or_from(@user).paginate(:page=>params[:page], :per_page => 10)
+    @message=Micropost.new
+    respond_to do |format|
+      format.html
+      format.json { render json: @messages }
+    end
+
+  end
+
 
   private
 

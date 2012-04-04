@@ -9,7 +9,7 @@ class UsersTest < ActionDispatch::IntegrationTest
     context "failure" do
 
       setup do
-      @attr = { :name => "", :email => "", :password => "", :password_confirmation => "" }
+        @attr = { :name => "", :email => "", :password => "", :password_confirmation => "" }
       end
 
       should "not make a new user" do
@@ -39,7 +39,7 @@ class UsersTest < ActionDispatch::IntegrationTest
     context "success" do
 
       setup do
-      @attr = { :name => "pep", :email => "fitxia@gmail.com", :password => "cuionets", :password_confirmation => "cuionets" }
+        @attr = { :name => "pep", :email => "fitxia@gmail.com", :password => "cuionets", :password_confirmation => "cuionets" }
       end
 
       should "make a new user" do
@@ -56,8 +56,14 @@ class UsersTest < ActionDispatch::IntegrationTest
 
     context "failure" do
 
+      setup do
+        visit signin_path
+        fill_in 'session_email',    :with => "wrong@email.com"
+        fill_in 'session_password', :with => "wrong"
+        click_button "Sign in"
+      end
+
       should "not sign a user in" do
-        integration_signin User.new
         assert page.has_selector?("div.flash", :text => "Invalid")
       end
 
@@ -66,12 +72,10 @@ class UsersTest < ActionDispatch::IntegrationTest
     context "success" do
 
       setup do
-        @attr = {email: "test@email.tst",  password: "testpwd"}
-        @user=User.create! @attr.merge({name: "test_user", password_confirmation: "testpwd"})
+        integration_signin
       end
 
       should "sign a user in and out" do
-        integration_signin @user
         assert page.has_selector?("div.flash.success"), "Welcome not found!"
         click_link "Sign out"
         assert page.has_selector?("div.flash", :text => "Bye Babe"), "Bye Babe not found!"

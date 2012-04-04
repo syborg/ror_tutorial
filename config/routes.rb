@@ -10,11 +10,11 @@ RorTutorial::Application.routes.draw do
   resources :users do
     resources :microposts, :only => :index
   end
-  # MME adds following and followers actions to users (member implies user id, while collection not)
-  # /users/1/following, /users/1/followers
+  # MME adds following, followers and reply actions to users (member implies user id, while collection not)
+  # /users/1/following, /users/1/followers ,/users/1/reply, /users/1/message
   resources :users do
     member do
-      get :following, :followers, :reply
+      get :following, :followers, :reply, :message
     end
   end
 

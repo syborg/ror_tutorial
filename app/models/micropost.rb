@@ -12,7 +12,7 @@
 
 class Micropost < ActiveRecord::Base
 
-  attr_accessible :content, :in_reply_to
+  attr_accessible :content, :in_reply_to, :private
   
   validates :content, length: {maximum: 140},  # MME maxim 140 caracters
                       presence: true
@@ -34,6 +34,21 @@ class Micropost < ActiveRecord::Base
 
   scope :from_users_followed_by_or_in_reply_to, lambda { |user| followed_by_or_in_reply_to(user) }
 
+  scope :messages, where(:private => true)
+  scope :privates, :messages
+
+  scope :not_messages, where("(private = ?) OR (private IS NULL)", false)
+  scope :publics, :not_messages
+  scope :not_privates, :not_messages
+
+  scope :to_or_from, lambda {|user| where("user_id=:id OR in_reply_to=:id", {:id=>user.id})}
+
+  scope :between, lambda { |usr1, usr2|
+    where("(user_id=:usr1 AND in_reply_to=:usr2) OR (user_id=:usr2 AND in_reply_to=:usr1)",
+          {:usr1=>usr1.id, :usr2=>usr2.id})
+  }
+
+
   # Returns all own microposts and from following
   #def self.from_users_followed_by(user)
   #  #user.microposts + user.following_microposts(user)
@@ -54,9 +69,14 @@ class Micropost < ActiveRecord::Base
   #  registres necessaris (veure cap 12.3.3). Es molt mes escalable.
   #end
 
-  # MME Returns true if self is a reply to other user
+  # MME Returns true if self is a reply to a user
   def is_reply?
-    !!self.in_reply_to
+    in_reply_to && ! self.private
+  end
+
+  # MME Returns true if self is a message to a user
+  def is_message?
+    in_reply_to && self.private
   end
 
   private
