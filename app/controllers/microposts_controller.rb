@@ -7,6 +7,8 @@ class MicropostsController < ApplicationController
   # POST /microposts.json
   def create
     @micropost = current_user.microposts.build(params[:micropost])
+    # MME parses if @ or d at the beginning to patch and convert to reply or message
+    @micropost.parse_and_patch
 
     respond_to do |format|
       if @micropost.save

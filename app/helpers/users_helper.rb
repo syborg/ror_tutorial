@@ -16,19 +16,18 @@ module UsersHelper
     gravatar_image_tag user.email.downcase, options
   end
 
-# MME returns a shortened version for the mail to include in replies
+  # MME returns a link with a shortened version of the name to include in replies
   def shortened_link_for(user)
     #link_to "@" + user.email.match(/(.*)@/i)[1] + user.id.to_s, user
-    link_to "@" + user.name.downcase.split.join("_") + user.id.to_s, user
+    link_to "@" + user.pseudo_login_name, user
   end
-
 
   private
 
-  	# chooses a random image (png, jpg or gif) from .../avatars directory
-	  def random_avatar
-	  	avatars_dir = File.join(Rails.configuration.root.to_s,"/app/assets/images/avatars/")
-		  Dir["#{avatars_dir}*{png,jpg,gif}"].map {|f| f.sub!(avatars_dir,"")}.sample
-	  end
+    # chooses a random image (png, jpg or gif) from .../avatars directory
+    def random_avatar
+      avatars_dir = File.join(Rails.configuration.root.to_s,"/app/assets/images/avatars/")
+      Dir["#{avatars_dir}*{png,jpg,gif}"].map {|f| f.sub!(avatars_dir,"")}.sample
+    end
 
 end

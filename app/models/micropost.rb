@@ -79,6 +79,21 @@ class Micropost < ActiveRecord::Base
     in_reply_to && self.private
   end
 
+  # MME parses content and if it begins with @ or * and a pseudo_login_name 
+  # the Micropost is patched to become a reply or a message respectively
+  def parse_and_patch
+    if mch=self.content.match(/^([\*@])(\S+)\s+/)
+      pln=mch[2]
+      if usr=User.find_by_pseudo_login_name(pln)
+        self.in_reply_to = usr.id
+        self.private = mch[1] == '*' ? true : false
+        self.content = self.content.sub(mch[0], "")
+        self.save
+      end
+    end
+    self    
+  end
+
   private
 
     # Return an SQL condition for users followed by the given user.

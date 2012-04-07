@@ -9,6 +9,13 @@
   <div class="field">
     <%= f.text_area :content, :onkeyup=>'charsleft(this)'  %>
   </div>
+  <div class="small quiet">
+    if content begins with <span class="loud">@pln</span> you'll send a repy 
+    <br />
+    if content begins with <span class="loud">*pln</span> you'll send a message (private)  
+    <br />
+    where <span class="loud">pln</span> is the pseudo_login_name, i.e. the downcased name and/or the id separated by underscores
+  </div>
   <div class="actions">
     <%= f.submit "Submit"%>
   </div>

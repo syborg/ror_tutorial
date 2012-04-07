@@ -139,8 +139,25 @@ class User < ActiveRecord::Base
   def messages_to_or_from usr
     Micropost.messages.between usr, self
   end
-
   alias conversation_with messages_to_or_from
+
+  # MME generates a unique login name for a user
+  def pseudo_login_name
+    name.downcase.split.join("_")+"_"+ id.to_s
+  end
+
+  # MME finds a user from a pseudo_login_name
+  # first tries to get it from an id
+  # last tries to get it from a name
+  def self.find_by_pseudo_login_name(pln)
+    nam=pln.split("_")
+    id = nam.last.to_i
+    if id>0 # First attempt: if it exists an id as the last part off the pln 
+      User.find_by_id(id)
+    else # Second attempt: try to generate a name from a pln
+      User.find_by_name(nam.map(&:capitalize).join(" "))
+    end
+  end
 
   # FUNCIONS PRIVADES
   private

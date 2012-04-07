@@ -175,6 +175,28 @@ class UserTest < ActiveSupport::TestCase
     end
   end
 
+  context "pseudo_login_name" do
+
+    should "return downcased name with underscores and id" do
+      user = User.create @attr
+      assert_equal user.pseudo_login_name, "example_user_#{user.id.to_s}"
+    end
+
+    should "return the correct User when last part is the id" do
+      user = User.create @attr
+      user_found = User.find_by_pseudo_login_name "blablabla_#{user.id.to_s}"
+      assert_equal user, user_found
+    end
+
+    should "return the correct User when first part is the downcased name with underscores" do
+      user = User.create @attr
+      user_found = User.find_by_pseudo_login_name "example_user"
+      assert_equal user, user_found
+    end
+
+
+  end
+
   context "micropost associations" do
 
     setup do

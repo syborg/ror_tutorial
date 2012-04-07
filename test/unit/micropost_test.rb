@@ -151,6 +151,46 @@ class MicropostTest < ActiveSupport::TestCase
 
     end
 
+    context "a micropost with parseable content" do
+
+      setup do
+        @other_user=User.create :name => "Rodolfo Pinchon",
+                                :email => "user@example.com",
+                                :password => "foobar",
+                                :password_confirmation => "foobar"
+      end
+
+      context "if intended recipient user exists" do
+
+        should "become a reply if begins with '@'+pseudo_login_name" do
+          mp = @user.microposts.create :content=>"@rodolfo_pinchon Hi, I'm the one"
+          mp.parse_and_patch
+          assert mp.is_reply?
+        end
+
+        should "become a message if begins with '*'+pseudo_login_name" do
+          mp = @user.microposts.create :content=>"*rodolfo_pinchon Hi, I'm the one"
+          mp.parse_and_patch
+          assert mp.is_message?
+        end
+
+        should "clear [*|@]+pseudo_login_name from content if correctly parsed" do
+          mp = @user.microposts.create :content=>"@rodolfo_pinchon Hi, I'm the one"
+          mp.parse_and_patch
+          assert_equal mp.content, "Hi, I'm the one"
+        end
+
+        should "be untouched if it doesn't begin with '@'+pseudo_login_name or '*'+pseudo_login_name" do
+          cntnt="jrodolfo_pinchon Hi, I'm the one"
+          mp = @user.microposts.create :content=>cntnt
+          mp.parse_and_patch
+          assert_equal mp.content, cntnt
+        end
+
+      end
+
+    end
+
   end
 
 end
