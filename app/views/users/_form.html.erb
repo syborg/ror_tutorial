@@ -17,6 +17,14 @@
     <%= f.label :password_confirmation, "Confirmation" %><br />
     <%= f.password_field :password_confirmation %>
   </div>
+  </div><div class="field">
+    <%= f.label :admin, "Administrator?" %><br />
+    <%= f.check_box :admin%>
+  </div>
+   </div><div class="field">
+    <%= f.label :notify_followers, "Send mail when followers added / deleted?" %><br />
+    <%= f.check_box :notify_followers%>
+  </div>
   <div class="actions">
     <%= f.submit (controller.action_name=="new" ? "Sign Up!" : "Update!") %>
   </div>

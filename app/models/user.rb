@@ -20,7 +20,7 @@ class User < ActiveRecord::Base
   attr_accessor :password # MME nomes dona acces a la instance var @password que no es guarda a la BBDD
 
   # MME si es posa, atributs (columnes) als que es podrà accedir via ActiveRecord
-  attr_accessible	:name, :email, :password, :password_confirmation
+  attr_accessible	:name, :email, :password, :password_confirmation, :admin, :notify_followers
   # MME validacions
   validates :name, :presence => true,
                    :length=> {maximum: 50}

@@ -6,6 +6,8 @@ class RelationshipsController < ApplicationController
   def create
     @user=User.find(params[:relationship][:followed_id])
     current_user.follow! @user
+    # notifies to followed
+    UserMailer.new_follower_notification(@user, current_user).deliver unless current_user.notify_followers
     respond_to do |format|
       format.html  {
         flash[:info]="Now following #{@user.name}!"
@@ -21,6 +23,8 @@ class RelationshipsController < ApplicationController
     @user=rs.followed
     # MME tambe funcionaria current_user.unfollow!(@user))
     rs.destroy
+    # notifies @user that is being dropped from current_user's following list
+    UserMailer.old_follower_notification(@user, current_user).deliver unless current_user.notify_followers
     respond_to do |format|
       format.html  {
         flash[:alert]="Bye #{@user.name}!"
