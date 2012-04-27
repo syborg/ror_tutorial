@@ -54,6 +54,7 @@ group :test do
   gem 'shoulda-context'
   # MME easy integration tests with capybara
   gem 'capybara'
+  gem 'selenium-webdriver'
   gem 'launchy'
   gem 'database_cleaner'
   # MME continuous testing (detecta canvis i reexecuta tests)

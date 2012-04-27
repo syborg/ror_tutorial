@@ -413,12 +413,12 @@ class UsersControllerTest < ActionController::TestCase
       end
 
       should "show user following" do
-        get :following, :id => @user
+        get :following, :id => @user.id
         assert_select "a[href=?]", user_path(@other_user), :text => @other_user.name
       end
 
       should "show user followers" do
-        get :followers, :id => @other_user
+        get :followers, :id => @other_user.id
         assert_select "a[href=?]", user_path(@user), :text => @user.name
       end
     end
@@ -506,6 +506,64 @@ class UsersControllerTest < ActionController::TestCase
         assert_select "form", 1 do
           assert_select "input[type=?][value=?]", "hidden", true
         end
+      end
+
+    end
+
+  end
+
+  # password reminders
+  context "PUT 'password'" do
+
+    setup do
+      @attr = {:name=>"Julius Erwing",
+               :email => "je@email.tst",
+               :password => "password",
+               :password_confirmation => "password"}
+      @user = User.create! @attr
+    end
+
+    context "when password reminder exists" do
+
+      setup do
+        @pwd = @user.generate_password_reminder
+      end
+
+      should "remove password reminder when user logs in" do
+        assert_difference "PasswordReminder.count", -1 do
+          test_sign_in @user
+        end
+      end
+
+      should "redirect to root when password correctly set" do
+        put :password, :token=>@pwd.token, :user => @attr
+        assert_redirected_to root_path
+      end
+
+      should "output a flash success message" do
+        put :password, :token=>@pwd.token, :user => @attr
+        assert_equal 'Password updated', flash[:success]
+      end
+
+      should "retry password update when password wrongly set" do
+        put :password, :token=>@pwd.token, :user => @attr.merge(:password=>"wrong_password")
+        assert_template "password_reminders/edit"
+      end
+
+    end
+
+    context "when password reminder doesn't exist" do
+
+      setup do
+        put :password, :token=>"obsoletetoken", :user => @attr
+      end
+
+      should "not be able to update password" do
+        assert_redirected_to root_path
+      end
+
+      should "output a flash error message" do
+        assert_equal 'Invalid Password Reminder', flash[:error]
       end
 
     end

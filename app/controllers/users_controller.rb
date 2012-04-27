@@ -1,7 +1,7 @@
 class UsersController < ApplicationController
 
   # MME Els usuaris no autenticats nomes poden mostrar un usuari i crear una compta
-  before_filter :authenticate, :except => [:show, :new, :create]
+  before_filter :authenticate, :except => [:show, :new, :create, :password]
   # MME evitem que usuaris no correctes puguin editar altres registres
   before_filter :correct_user, :only => [:edit, :update]
   # MME nomes permetem esborrar als administradors
@@ -100,6 +100,31 @@ class UsersController < ApplicationController
     end
   end
 
+  # Actualitza el password de l'usuari, pero sense ser necessari que l'usuari estigui signed in (password reminder)
+  # PUT /users/1/password
+  # PUT /users/1.json/password
+  def password
+    @user = User.find_by_token(params[:token])
+    respond_to do |format|
+      if @user
+        if @user.update_attributes(params[:user])
+          format.html { redirect_to root_path, :flash => { success: 'Password updated'} }
+          format.json { head :ok }
+        else
+          format.html {
+            @title = "Edit user"
+            render "password_reminders/edit"
+            # redirect_to edit_password_reminder_path(params[:token])
+          }
+          format.json { render json: @user.errors, status: :unprocessable_entity }
+        end
+      else
+        format.html { redirect_to root_path, :flash => { error: 'Invalid Password Reminder'} }
+        format.json { head :ok }
+      end
+    end
+  end
+
   # DELETE /users/1
   # DELETE /users/1.json
   def destroy
@@ -156,9 +181,9 @@ class UsersController < ApplicationController
 
   end
 
-  # Prepara el formulari de resposta per a enviar un micropost reply a un usuari
-  # GET /users/1/reply
-  # GET /users/1/reply.json
+  # Prepara el formulari de resposta per a enviar un micropost message a un usuari
+  # GET /users/1/message
+  # GET /users/1/message.json
   def message
     @title = "Message"
     @user=User.find(params[:id])
@@ -168,9 +193,7 @@ class UsersController < ApplicationController
       format.html
       format.json { render json: @messages }
     end
-
   end
-
 
   private
 

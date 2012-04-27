@@ -13,4 +13,10 @@ class UserMailer < ActionMailer::Base
     mail :to=>"#{user.name} <#{user.email}>", :subject=>"You've lost a follower!"
   end
 
+  # MME sends a mail to notify to a user that it has a password reminder
+  def password_reminder(user)
+    @user = user
+    mail :to=>"#{user.name} <#{user.email}>", :subject=>"Password Reminder"
+  end
+
 end

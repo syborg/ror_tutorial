@@ -10,13 +10,26 @@ RorTutorial::Application.routes.draw do
   resources :users do
     resources :microposts, :only => :index
   end
-  # MME adds following, followers and reply actions to users (member implies user id, while collection not)
+  # MME adds following, followers, reply and message actions to users (member implies user id, while collection not)
   # /users/1/following, /users/1/followers ,/users/1/reply, /users/1/message
   resources :users do
     member do
       get :following, :followers, :reply, :message
     end
   end
+
+  # MME adds routes to enable password reminders
+  resources :password_reminders, :only => [:new, :create]
+  # En comptes de deixar que aquesta ruta sigui la estandar de resources,faig algunes modificacions com el
+  # identificar el password_reminder pel token (no per un id))
+  match '/password_reminders/:token', :to=>'password_reminders#edit',  # controller#action
+                                     :as=>:edit_password_reminder,    # named route
+                                     :via=>'get'                      # HTTP method
+  # MME adds password action to users
+  # /users/:token/password
+  match 'users/:token/password',    :to=>'users#password',  # controller#action
+                                    :as=>:password_user,    # named route
+                                    :via=>'put'             # HTTP method
 
   # MME named routes que simplifiquen les standard (pages/...)
   match '/contact', :to => 'pages#contact'

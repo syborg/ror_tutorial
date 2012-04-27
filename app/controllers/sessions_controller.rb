@@ -1,9 +1,11 @@
 class SessionsController < ApplicationController
-  
+
+  # GET /sessions/new
   def new
     @title = "Sign in"
   end
 
+  # POST /sessions
   def create
     user = User.authenticate(params[:session][:email], 
                              params[:session][:password])

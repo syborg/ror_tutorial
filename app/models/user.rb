@@ -10,6 +10,7 @@
 #  encrypted_password :string(255)
 #  salt               :string(255)
 #  admin              :boolean         default(FALSE)
+#  notify_followers   :boolean         default(TRUE)
 #
 
 # MME per a utilitzar les Hash functions
@@ -75,6 +76,9 @@ class User < ActiveRecord::Base
   has_many :following_microposts, :through => :following, 
                                   :source => :microposts
 
+  # Si n'hi ha, te un password_reminder
+  has_one :password_reminder
+
   # Torna l'User de l'email si el password es correcte
   def self.authenticate(email, submited_pwd)
     if usr = find_by_email(email)
@@ -112,7 +116,7 @@ class User < ActiveRecord::Base
   end
 
   def follow! usr
-    relationships.create!(:followed_id => usr.id)
+    relationships.create! :followed_id => usr.id
   end
 
   def unfollow! usr
@@ -133,7 +137,6 @@ class User < ActiveRecord::Base
 
   def messages_from usr
     usr.microposts.messages.where(:in_reply_to => self.id)
-
   end
 
   def messages_to_or_from usr
@@ -144,6 +147,24 @@ class User < ActiveRecord::Base
   # MME generates a unique login name for a user
   def pseudo_login_name
     name.downcase.split.join("_")+"_"+ id.to_s
+  end
+
+  # MME generates a password reminder if it doesn't yet exist
+  def generate_password_reminder
+    #PasswordReminder.find_or_create_by_user_id_and_token :user_id=>self.id,
+    #                                                     :token=>SecureRandom.hex(32)
+    create_password_reminder!(:token=>SecureRandom.hex(32)) unless password_reminder
+  end
+
+  # MME removes its password reminder if exists
+  def remove_password_reminder
+    password_reminder.delete if password_reminder
+  end
+
+  # finds a user from a token (password reminder to change password)
+  def self.find_by_token(token)
+    pr=PasswordReminder.find_by_token(token, :include=>:user)
+    pr.user if pr
   end
 
   # MME finds a user from a pseudo_login_name

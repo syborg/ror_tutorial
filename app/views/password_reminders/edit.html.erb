@@ -1,0 +1,37 @@
+<h1>Regenerate Password</h1>
+
+<table class="profile" summary="Profile information">
+  <tr>
+    <td class="main">
+      <h1>
+        <%= gravatar_for @user %>
+        <%= @user.name %>
+      </h1>
+    </td>
+    <td class="sidebar round">
+      <%= form_for(@user, :url=>password_user_path(@user.password_reminder.token)) do |f| %>
+        <% if @user.errors.any? %>
+          <%= render :partial => 'shared/error_messages', :object => @user.errors %>
+        <% end %>
+        <%= f.hidden_field :name %>
+        <%= f.hidden_field :email %>
+        <%= f.hidden_field :admin%>
+        <%= f.hidden_field :notify_followers%>
+        <div class="field">
+           <%= f.label :password %><br />
+           <%= f.password_field :password %>
+        </div>
+        <div class="field">
+          <%= f.label :password_confirmation, "Confirmation" %><br />
+          <%= f.password_field :password_confirmation %>
+        </div>
+        <div class="actions">
+          <%= f.submit "Set Password!" %>
+        </div>
+      <% end %>
+    </td>
+  </tr>
+</table>
+
+<%= link_to 'Show', @user %> |
+<%= link_to 'Back', users_path %>

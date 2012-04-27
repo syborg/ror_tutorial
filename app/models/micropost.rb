@@ -8,6 +8,7 @@
 #  created_at  :datetime
 #  updated_at  :datetime
 #  in_reply_to :integer
+#  private     :boolean
 #
 
 class Micropost < ActiveRecord::Base

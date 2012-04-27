@@ -10,6 +10,7 @@
 #  encrypted_password :string(255)
 #  salt               :string(255)
 #  admin              :boolean         default(FALSE)
+#  notify_followers   :boolean         default(TRUE)
 #
 
 require 'test_helper'
@@ -336,7 +337,6 @@ class UserTest < ActiveSupport::TestCase
 
       end
 
-
     end
 
   end
@@ -400,6 +400,59 @@ class UserTest < ActiveSupport::TestCase
     should "include the follower in the followers array" do
       @user.follow!(@followed)
       assert_include @followed.followers, @user
+    end
+
+  end
+
+  context "users with password reminder" do
+
+    setup do
+      @user=users(:one)
+      @user_two=users(:two)
+    end
+
+    should "have a password_reminder method" do
+      assert @user.respond_to? :password_reminder
+    end
+
+    should "have a generate_password_reminder method" do
+      assert @user.respond_to? :generate_password_reminder
+    end
+
+    should "have a remove_password_reminder method" do
+      assert @user.respond_to? :remove_password_reminder
+    end
+
+    should "match with assigned token" do
+      @user.create_password_reminder :token=>"token"
+      assert_equal @user.password_reminder.token, "token"
+    end
+
+    should "not share password reminders" do
+      @user.create_password_reminder :token=>"token"
+      assert_raise ActiveRecord::StatementInvalid do
+        @user_two.create_password_reminder(:token=>"token")
+      end
+    end
+
+    should "have no more than one reminder" do
+      @user.generate_password_reminder
+      assert_no_difference "PasswordReminder.count" do
+        @user.generate_password_reminder
+      end
+    end
+
+    should "remove his password reminder if it exists" do
+      @user.generate_password_reminder
+      assert_difference "PasswordReminder.count", -1  do
+        @user.remove_password_reminder
+      end
+    end
+
+    should "not remove any password reminder if it doesn't exist" do
+      assert_no_difference "PasswordReminder.count" do
+        @user.remove_password_reminder
+      end
     end
 
   end

@@ -7,6 +7,9 @@ module SessionsHelper
     # es a dir encriptada i protegida contra canvis 
     cookies.permanent.signed[:remember_token]=[user.id, user.salt]
     self.current_user=user
+    # removes its password reminder if it existed
+    user.remove_password_reminder
+    user
   end
 
   def sign_out
