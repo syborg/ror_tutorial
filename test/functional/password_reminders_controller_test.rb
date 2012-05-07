@@ -13,7 +13,7 @@ class PasswordRemindersControllerTest < ActionController::TestCase
     end
 
     should "have the right title" do
-      assert_select "title", :text=>/.*Recreate Password$/
+      assert_select "title", :text=>/.*Generate Password Reminder$/
     end
 
   end

@@ -1,0 +1,13 @@
+<h1>Send Activation Token</h1>
+
+<%= form_for :activation_token, :url => activation_tokens_path do |f| %>
+  <div class="field">
+    <%= f.label :email %><br />
+    <%= f.text_field :email %>
+  </div>
+  <div class="actions">
+    <%= f.submit "Send!" %>
+  </div>
+<% end %>
+
+<p>New user? <%= link_to "Sign up now!", signup_path %></p>

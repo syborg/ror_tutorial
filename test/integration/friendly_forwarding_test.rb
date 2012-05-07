@@ -10,6 +10,7 @@ class FriendlyForwardingTest < ActionDispatch::IntegrationTest
       #Capybara.current_driver = Capybara.javascript_driver
       @attr = {email: "test@email.tst",  password: "testpwd"}
       @user=User.create! @attr.merge({name: "test_user", password_confirmation: "testpwd"})
+      @user.activate  # force @user to be already activated
     end
 
     should "forward to the requested page after signin" do

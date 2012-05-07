@@ -1,7 +1,7 @@
 class UsersController < ApplicationController
 
   # MME Els usuaris no autenticats nomes poden mostrar un usuari i crear una compta
-  before_filter :authenticate, :except => [:show, :new, :create, :password]
+  before_filter :authenticate, :except => [:show, :new, :create, :password, :activation]
   # MME evitem que usuaris no correctes puguin editar altres registres
   before_filter :correct_user, :only => [:edit, :update]
   # MME nomes permetem esborrar als administradors
@@ -61,13 +61,13 @@ class UsersController < ApplicationController
   # POST /users.json
   def create
     @user = User.new(params[:user])
-
     respond_to do |format|
       if @user.save
-        format.html { 
-          sign_in @user
-          flash[:success] = "Benvingut a l'aplicacio de prova!"
-          redirect_to @user
+        format.html {
+          @user.generate_activation_token
+          UserMailer.activation_token(@user).deliver
+          flash[:success] = "Benvingut a Rettiwet! ... T'hem enviat un mail per activar el teu account ... consulta'l en breu!"
+          redirect_to signin_path
         }
         format.json { render json: @user, status: :created, location: @user }
       else
@@ -104,7 +104,7 @@ class UsersController < ApplicationController
   # PUT /users/1/password
   # PUT /users/1.json/password
   def password
-    @user = User.find_by_token(params[:token])
+    @user = User.find_by_password_reminder(params[:token])
     respond_to do |format|
       if @user
         if @user.update_attributes(params[:user])
@@ -114,7 +114,6 @@ class UsersController < ApplicationController
           format.html {
             @title = "Edit user"
             render "password_reminders/edit"
-            # redirect_to edit_password_reminder_path(params[:token])
           }
           format.json { render json: @user.errors, status: :unprocessable_entity }
         end
@@ -125,12 +124,30 @@ class UsersController < ApplicationController
     end
   end
 
+  # Activa l'usuari quan aquest clica al link del token que se li ha enviat
+  # GET /users/1/activation
+  # GET /users/1.json/activation
+  def activation
+    @user = User.find_by_activation_token(params[:token])
+    respond_to do |format|
+      if @user
+        @user.activate
+        @user.remove_activation_token
+        format.html { redirect_to signin_path, :flash => { success: "You've successfully activated your account ... please signin!"} }
+        format.json { head :ok }
+      else
+        format.html { redirect_to root_path, alert: 'Invalid Activation Token' }
+        format.json { head :ok }
+      end
+    end
+  end
+
   # DELETE /users/1
   # DELETE /users/1.json
   def destroy
     user=User.find(params[:id])
     if current_user?(user)
-      flash[:error] = "Admin user can't commit suicide"
+      flash[:error] = "Admin user can't do suicide"
     else
       user.destroy
       flash[:success] = "User destroyed"

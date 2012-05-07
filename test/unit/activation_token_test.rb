@@ -9,28 +9,27 @@
 
 require 'test_helper'
 
-class PasswordReminderTest < ActiveSupport::TestCase
+class ActivationTokenTest < ActiveSupport::TestCase
 
-  context "a password reminder" do
+  context "an activation token" do
 
     setup do
       @user = users(:one)
-      @pr = @user.generate_password_reminder
+      @at = @user.generate_activation_token
     end
 
-    should "have a token method" do
-      assert @pr.respond_to? :token
+    should "have a 'token' method" do
+      assert @at.respond_to? :token
     end
 
     should "have a user method" do
-      assert @pr.respond_to? :user
+      assert @at.respond_to? :user
     end
 
     should "correspond to the user that created it" do
-      assert_equal @pr.user, @user
+      assert_equal @at.user, @user
     end
 
   end
-
 
 end

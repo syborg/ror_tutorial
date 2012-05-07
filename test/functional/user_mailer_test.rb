@@ -51,7 +51,34 @@ class UserMailerTest < ActionMailer::TestCase
     end
 
     should "contain link to password_reminder" do
-      assert_match /.*reminder\/#{@pr.token}.*/, @email.body
+      assert_match /.*reminders\/#{@pr.token}.*/, @email.body
+    end
+
+  end
+
+  context "multi step signup (state_machine)" do
+
+    include ActionView::Helpers::UrlHelper
+
+    setup do
+      ActivationToken.delete_all
+      @user=users(:one)
+      @at=@user.generate_activation_token
+      @email=UserMailer.activation_token(@user).deliver
+    end
+
+    should "send an email when prompted to do it" do
+      assert !ActionMailer::Base.deliveries.empty?  # en Test els mails nomes van a una cua
+    end
+
+    should "send an email to a user from support@rettiwet.com" do
+      assert_equal @email.to, [@user.email]
+      assert_equal @email.from, ["support@rettiwet.com"]
+    end
+
+    should "contain link to activation_token" do
+      path="/users/#{@at.token}/activation"
+      assert_match %r[.*#{path}.*], @email.body
     end
 
   end

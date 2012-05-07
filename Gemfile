@@ -23,6 +23,9 @@ gem 'jquery-rails'
 # MME Javascript Runtime
 gem 'therubyracer'
 
+# MME suport de maquina d'estats per a fer el seguiment de les subscripcions'
+gem 'state_machine'
+
 # To use ActiveModel has_secure_password
 # gem 'bcrypt-ruby', '~> 3.0.0'
 

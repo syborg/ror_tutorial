@@ -16,9 +16,14 @@ class SessionsController < ApplicationController
       render 'new'
     else
       # Sign the user in and redirect to the user's show page.
-      flash[:success] = "Welcome!"
-      sign_in user
-      redirect_back_or user
+      if user.active?
+        flash[:success] = "Welcome!"
+        sign_in user
+        redirect_back_or user
+      else
+        flash[:error] = "It seems that your account isn't activated yet. Activate your account, please"
+        redirect_to new_activation_token_path
+      end
     end
   end
 

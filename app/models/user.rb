@@ -11,6 +11,7 @@
 #  salt               :string(255)
 #  admin              :boolean         default(FALSE)
 #  notify_followers   :boolean         default(TRUE)
+#  state              :string(255)
 #
 
 # MME per a utilitzar les Hash functions
@@ -22,7 +23,8 @@ class User < ActiveRecord::Base
 
   # MME si es posa, atributs (columnes) als que es podrà accedir via ActiveRecord
   attr_accessible	:name, :email, :password, :password_confirmation, :admin, :notify_followers
-  # MME validacions
+
+  # MME validacions (s'executen just abans de guardar-se a la BBDD si s'invoca save. S'eviten si s'invoca save(false))
   validates :name, :presence => true,
                    :length=> {maximum: 50}
 
@@ -34,10 +36,24 @@ class User < ActiveRecord::Base
                        :confirmation => true,	# crea un atribut password_confirmation i a la vegada confirma que sigui igual que password
                        :length => { :within => 6..40 }
 
-    # validates :password_confirmation, :presence => true	# MME aixo exigigeix que al crear es passi un :password_confirmation, doncs amb nomes
-                              #	  l'anterior validator sol, pot crearse un usuari si no es passa :password_confirmation
+  # validates :password_confirmation, :presence => true	# MME aixo exigigeix que al crear es passi un :password_confirmation, doncs amb nomes
+                  #	  l'anterior validator sol, pot crearse un usuari si no es passa :password_confirmation
+
 
   before_save :encrypt_password
+
+
+  ## MME state_machine per a fer la inscripcio en passos.
+  # Atencio, les validacions del model es poden insertar dins la maquina d'estats, perque si son fora, cada cop que es
+  # canvia d'estat state_machine utilitza #save i aleshores es comproven totes les validacions, per la qual cosa no
+  # canvia d'estat si no se li passen els atributs d'acord a les validacions esperades. Per evitar-ho, es pot redefinir
+  # amb :action=> la nova funcio que es crida cada cop que es canvia d'estat, de manera que no es cridin les validacions
+  # i/o els callbacks
+  state_machine :initial => :inactive, :action=>:save_state do
+    event :activate do
+      transition :inactive => :active
+    end
+  end
 
   # MME a l'esborrar un User s'esborren tb els seus Micropost
   has_many :microposts, :dependent => :destroy
@@ -78,6 +94,9 @@ class User < ActiveRecord::Base
 
   # Si n'hi ha, te un password_reminder
   has_one :password_reminder
+
+   # Si n'hi ha, te un activation_token
+  has_one :activation_token
 
   # Torna l'User de l'email si el password es correcte
   def self.authenticate(email, submited_pwd)
@@ -149,22 +168,34 @@ class User < ActiveRecord::Base
     name.downcase.split.join("_")+"_"+ id.to_s
   end
 
-  # MME generates a password reminder if it doesn't yet exist
+  # MME generate, remove and find_by password_reminders and activation_tokens
+  # MME creates a password reminder if it doesn't yet exist
   def generate_password_reminder
-    #PasswordReminder.find_or_create_by_user_id_and_token :user_id=>self.id,
-    #                                                     :token=>SecureRandom.hex(32)
     create_password_reminder!(:token=>SecureRandom.hex(32)) unless password_reminder
   end
 
-  # MME removes its password reminder if exists
+  # MME removes if exists
   def remove_password_reminder
     password_reminder.delete if password_reminder
   end
 
-  # finds a user from a token (password reminder to change password)
-  def self.find_by_token(token)
+  # finds a user from a token
+  def self.find_by_password_reminder(token)
     pr=PasswordReminder.find_by_token(token, :include=>:user)
     pr.user if pr
+  end
+
+  def generate_activation_token
+    create_activation_token!(:token=>SecureRandom.hex(32)) unless activation_token
+  end
+
+  def remove_activation_token
+    activation_token.delete if activation_token
+  end
+
+  def self.find_by_activation_token(token)
+    at=ActivationToken.find_by_token(token, :include=>:user)
+    at.user if at
   end
 
   # MME finds a user from a pseudo_login_name
@@ -194,6 +225,11 @@ class User < ActiveRecord::Base
 
     def encrypt(str)
       Digest::SHA2.hexdigest "#{salt}--#{str}"
+    end
+
+    # salva nomes la columna state (evitant callbacks i validations)
+    def save_state
+      update_column 'state', state
     end
 
 end

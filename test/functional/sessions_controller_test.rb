@@ -45,25 +45,54 @@ class SessionsControllerTest < ActionController::TestCase
 
     end
 
-    context "with valid signin (email and password)" do
+    context "with a brand new user" do
       
       setup do
         @attr = {email: "test@email.tst",  password: "testpwd"}
         @user=User.create! @attr.merge({name: "test_user", password_confirmation: "testpwd"})
-        post :create, :session => @attr
       end
 
-      should "have correct current_user" do
-        assert_equal @user, @controller.current_user
+      context "before activating" do
+
+        setup do
+          post :create, :session => @attr
+        end
+
+        should "not have current_user" do
+          assert_nil @controller.current_user
+        end
+
+        should "no have any signed in user" do
+          assert ! @controller.signed_in?
+        end
+
+        should "redirect to the root page" do
+          assert_redirected_to new_activation_token_path
+        end
+
       end
 
-      should "sign in the user" do
-        assert @controller.signed_in?
+      context "after activation" do
+
+        setup do
+          @user.activate
+          post :create, :session => @attr
+        end
+
+        should "have correct current_user" do
+          assert_equal @user, @controller.current_user
+        end
+
+        should "sign in the user" do
+          assert @controller.signed_in?
+        end
+
+        should "redirect to the user show page" do
+          assert_redirected_to user_path(@user)
+        end
+
       end
 
-      should "redirect to the user show page" do
-        assert_redirected_to user_path(@user)
-      end
 
     end
 

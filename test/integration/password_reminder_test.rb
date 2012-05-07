@@ -35,7 +35,11 @@ class PasswordRemindersTest < ActionDispatch::IntegrationTest
   context "with a password reminder" do
 
     setup do
-      @user=users(:one)
+      attr={:name=>"Bartomeu",
+            :email=>"barty@pelacanyes.cat",
+            :password=>"bartomine",
+            :password_confirmation=>"bartomine"}
+      @user=User.create attr
       @pr=@user.generate_password_reminder
     end
 

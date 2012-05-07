@@ -45,8 +45,8 @@ class UsersTest < ActionDispatch::IntegrationTest
       should "make a new user" do
         assert_difference 'User.count', 1 do
           post_via_redirect "users", :user=>@attr
-          assert_template 'users/show'
-          assert_select "div.flash.success", :content=>'welcome'
+          assert_template 'sessions/new'
+          assert_select "div.flash.success", :text=>/.*T'hem enviat un mail per activar.*/
         end
       end
     end

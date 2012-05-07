@@ -23,13 +23,22 @@ RorTutorial::Application.routes.draw do
   # En comptes de deixar que aquesta ruta sigui la estandar de resources,faig algunes modificacions com el
   # identificar el password_reminder pel token (no per un id))
   match '/password_reminders/:token', :to=>'password_reminders#edit',  # controller#action
-                                     :as=>:edit_password_reminder,    # named route
-                                     :via=>'get'                      # HTTP method
+                                     :as=>:edit_password_reminder,     # named route
+                                     :via=>'get'                       # HTTP method
   # MME adds password action to users
-  # /users/:token/password
+  # PUT /users/:token/password
   match 'users/:token/password',    :to=>'users#password',  # controller#action
                                     :as=>:password_user,    # named route
                                     :via=>'put'             # HTTP method
+
+  # MME adds routes to enable activation_tokens
+  resources :activation_tokens, :only => [:new, :create]
+
+  # MME adds activation action to users
+  # GET /users/:token/activation
+  match 'users/:token/activation',  :to=>'users#activation',  # controller#action
+                                    :as=>:activate_user,      # named route
+                                    :via=>'get'               # HTTP method
 
   # MME named routes que simplifiquen les standard (pages/...)
   match '/contact', :to => 'pages#contact'

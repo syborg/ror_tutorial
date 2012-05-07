@@ -11,6 +11,7 @@
 #  salt               :string(255)
 #  admin              :boolean         default(FALSE)
 #  notify_followers   :boolean         default(TRUE)
+#  state              :string(255)
 #
 
 require 'test_helper'
@@ -194,7 +195,6 @@ class UserTest < ActiveSupport::TestCase
       user_found = User.find_by_pseudo_login_name "example_user"
       assert_equal user, user_found
     end
-
 
   end
 
@@ -442,7 +442,7 @@ class UserTest < ActiveSupport::TestCase
       end
     end
 
-    should "remove his password reminder if it exists" do
+    should "remove his password reminder if it already exists" do
       @user.generate_password_reminder
       assert_difference "PasswordReminder.count", -1  do
         @user.remove_password_reminder
@@ -453,6 +453,41 @@ class UserTest < ActiveSupport::TestCase
       assert_no_difference "PasswordReminder.count" do
         @user.remove_password_reminder
       end
+    end
+
+  end
+
+  context "state_machine to enable multiple step signup" do
+
+    setup do
+      attr = {
+	      :name => "Example User",
+	      :email => "user@example.com",
+	      :password => "foobar",
+	      :password_confirmation => "foobar"
+	    }
+      @user=User.create attr
+    end
+
+    should "have a activation_token method" do
+      assert @user.respond_to? :activation_token
+    end
+
+    should "have a generate_activation_token method" do
+      assert @user.respond_to? :generate_activation_token
+    end
+
+    should "have a remove_activation_token method" do
+      assert @user.respond_to? :remove_activation_token
+    end
+
+    should "be initialized in 'inactive' state" do
+      assert_equal @user.state, 'inactive'
+    end
+
+    should "be able to change to 'active' state" do
+      @user.activate
+      assert_equal @user.state, 'active'
     end
 
   end

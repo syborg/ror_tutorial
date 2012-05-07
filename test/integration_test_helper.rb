@@ -24,9 +24,10 @@ class ActionDispatch::IntegrationTest
 
   def integration_signin
   	Capybara.current_driver = Capybara.javascript_driver # :selenium by default
-    # attribs = {:name=>"usuari", :email=>"usuari@integration.net",
-    #  :password=>"collonets", :password_confirmation=>"collonets"}
-    @user=users(:one)
+    attribs = {:name=>"usuari", :email=>"usuari@integration.net",
+               :password=>"collonets", :password_confirmation=>"collonets"}
+    @user=User.create(attribs)
+    @user.activate
     visit signin_path
     fill_in 'session_email',    :with => @user.email
     fill_in 'session_password', :with => "collonets"

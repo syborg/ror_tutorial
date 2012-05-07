@@ -2,12 +2,12 @@ module SessionsHelper
   
   # registra la sessio com de l'usuari (ja autenticat previament)  
   def sign_in(user)
-    # MME guarda una cookie anomenada remember_token (:remember_token) 
+    # MME guarda una cookie anomenada remember_token (:remember_token)
     # amb un període de vigencia de 20 anys (permenent) i signada (signed),
     # es a dir encriptada i protegida contra canvis 
     cookies.permanent.signed[:remember_token]=[user.id, user.salt]
     self.current_user=user
-    # removes its password reminder if it existed
+    # removes its password reminder if it existed to make it unusable
     user.remove_password_reminder
     user
   end

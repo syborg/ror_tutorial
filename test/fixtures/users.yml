@@ -11,6 +11,7 @@
 #  salt               :string(255)
 #  admin              :boolean         default(FALSE)
 #  notify_followers   :boolean         default(TRUE)
+#  state              :string(255)
 #
 
 # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html

@@ -1,12 +1,12 @@
 class PasswordRemindersController < ApplicationController
 
-  # Presenta el formulari pera omplir el mail on enviar el password reminder
+  # Presenta el formulari pera omplir el mail on enviar el activation token
   # GET /password_reminders/new
   def new
-    @title = "Recreate Password"
+    @title = "Generate Password Reminder"
   end
 
-  # Crea i Envia el password reminder
+  # Envia el password_reminder (si no existeix el crea))
   # POST /password_reminders
   def create
     user = User.find_by_email(params[:password_reminder][:email])

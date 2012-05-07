@@ -126,12 +126,12 @@ class UsersControllerTest < ActionController::TestCase
             
       should "redirect to the user show page" do
         post :create, :user => @attr
-        assert_redirected_to user_path(assigns(:user))
+        assert_redirected_to signin_path
       end
 
-      should "sign in the user" do
+      should "not sign in the user" do
          post :create, :user => @attr
-         assert @controller.signed_in?
+         assert ! @controller.signed_in?
       end
     end
 
@@ -227,8 +227,11 @@ class UsersControllerTest < ActionController::TestCase
   context "PUT 'update'" do
 
     setup do
-      @user = users(:one)
-      test_sign_in(@user)
+      attr = {:name=>"Julius Erwing",
+               :email => "je@email.tst",
+               :password => "password",
+               :password_confirmation => "password"}
+      @user=test_sign_in(User.create attr)
     end
 
     context "failure" do
@@ -246,6 +249,7 @@ class UsersControllerTest < ActionController::TestCase
       should "have the right title" do
         assert_select "title", :text => /Edit user/
       end
+
     end
 
     context "success" do
@@ -258,8 +262,8 @@ class UsersControllerTest < ActionController::TestCase
 
       should "change the user's attributes" do
         @user.reload
-        assert_equal @user.name, @attr[:name]
-        assert_equal @user.email, @attr[:email]
+        assert_equal @attr[:name], @user.name
+        assert_equal @attr[:email], @user.email
       end
 
       should "redirect to the user show page" do
@@ -569,5 +573,60 @@ class UsersControllerTest < ActionController::TestCase
     end
 
   end
+
+  # activation tokens
+  context "GET 'activation'" do
+
+    setup do
+      @attr = {:name=>"Julius Erwing",
+               :email => "je@email.tst",
+               :password => "password",
+               :password_confirmation => "password"}
+      @user = User.create! @attr
+    end
+
+    context "when activation token exists" do
+
+      setup do
+        @at = @user.generate_activation_token
+      end
+
+      should "remove activation token when accesses activation URL" do
+        assert_difference "ActivationToken.count", -1 do
+          get 'activation', :token => @at.token
+        end
+      end
+
+
+      should "redirect to signin path when correctly set" do
+        get :activation, :token=>@at.token
+        assert_redirected_to signin_path
+      end
+
+      should "output a flash success message" do
+        get :activation, :token=>@at.token
+        assert_match /.*successfully activated.*/i, flash[:success]
+      end
+
+    end
+
+    context "when activation token doesn't exist" do
+
+      setup do
+        get :activation, :token=>"obsoletetoken"
+      end
+
+      should "not be able to activate user" do
+        assert_redirected_to root_path
+      end
+
+      should "output a flash error message" do
+        assert_equal 'Invalid Activation Token', flash[:alert]
+      end
+
+    end
+
+  end
+
 
 end

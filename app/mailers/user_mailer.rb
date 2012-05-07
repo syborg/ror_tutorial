@@ -19,4 +19,10 @@ class UserMailer < ActionMailer::Base
     mail :to=>"#{user.name} <#{user.email}>", :subject=>"Password Reminder"
   end
 
+  # MME sends a mail to notify to a user that it has an activation token
+  def activation_token(user)
+    @user = user
+    mail :to=>"#{user.name} <#{user.email}>", :subject=>"You've signed up at Rettiwet.com'"
+  end
+
 end

@@ -11,7 +11,15 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120411230429) do
+ActiveRecord::Schema.define(:version => 20120501181204) do
+
+  create_table "activation_tokens", :force => true do |t|
+    t.integer "user_id"
+    t.string  "token"
+  end
+
+  add_index "activation_tokens", ["token"], :name => "index_activation_tokens_on_token", :unique => true
+  add_index "activation_tokens", ["user_id"], :name => "index_activation_tokens_on_user_id", :unique => true
 
   create_table "microposts", :force => true do |t|
     t.string   "content"
@@ -53,6 +61,7 @@ ActiveRecord::Schema.define(:version => 20120411230429) do
     t.string   "salt"
     t.boolean  "admin",              :default => false
     t.boolean  "notify_followers",   :default => true
+    t.string   "state"
   end
 
   add_index "users", ["email"], :name => "index_users_on_email", :unique => true
