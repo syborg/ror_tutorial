@@ -48,7 +48,7 @@ class User < ActiveRecord::Base
   # canvia d'estat state_machine utilitza #save i aleshores es comproven totes les validacions, per la qual cosa no
   # canvia d'estat si no se li passen els atributs d'acord a les validacions esperades. Per evitar-ho, es pot redefinir
   # amb :action=> la nova funcio que es crida cada cop que es canvia d'estat, de manera que no es cridin les validacions
-  # i/o els callbacks
+  # i/o els callbacks que per defecte fa 
   state_machine :initial => :inactive, :action=>:save_state do
     event :activate do
       transition :inactive => :active
@@ -58,29 +58,25 @@ class User < ActiveRecord::Base
   # MME a l'esborrar un User s'esborren tb els seus Micropost
   has_many :microposts, :dependent => :destroy
 
- # MME Afegim respostes als usuaris
+  # MME Afegim respostes als usuaris
   has_many :replies, :class_name => 'Micropost',
                      :foreign_key => "in_reply_to",
                      :inverse_of => :replied_user,
                      :dependent => :destroy
 
-  # User com a seguidor (follower)
-
+  ## User com a seguidor (follower)
   # te molts :relationships apuntant-lo amb la clau follower_id. Si el User s'elimina tots aquests Relationship tambe seran eliminats.
   has_many :relationships, :foreign_key => "follower_id",
                            :dependent => :destroy
-
   # te molts seguits via :relationships als que s'apunta via :followed_id  (inferit gracies a :followed, que apunta a la vegada als User)
   has_many :following, :through => :relationships,
                        :source => :followed
 
-  # User com a seguit (followed)
-
+  ## User com a seguit (followed)
   # te molts :reverse_relationships apuntant-lo amb la clau followed_id. Si el User s'elimina tots aquests Relationship tambe seran eliminats.
   has_many :reverse_relationships, :class_name => "Relationship",
                                    :foreign_key => "followed_id",
                                    :dependent => :destroy
-
   # te molts seguidors via :reverse_relationships als que s'apunta via :follower_id  (inferit gracies a :follower, que apunta a la vegada als User)
   has_many :followers, :through => :reverse_relationships
 
@@ -95,7 +91,7 @@ class User < ActiveRecord::Base
   # Si n'hi ha, te un password_reminder
   has_one :password_reminder
 
-   # Si n'hi ha, te un activation_token
+  # Si n'hi ha, te un activation_token
   has_one :activation_token
 
   # Torna l'User de l'email si el password es correcte

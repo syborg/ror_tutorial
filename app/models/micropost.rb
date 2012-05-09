@@ -17,7 +17,7 @@ class Micropost < ActiveRecord::Base
   
   validates :content, length: {maximum: 140},  # MME maxim 140 caracters
                       presence: true
-                      #format: {with: /\S+/}   # MME al menys 1 caracter "no espai"
+                      #format: {with: /\S+/}   # MME al menys 1 caracter "no espai" (no cal si 'presence: true' ja hi es)
   validates :user_id, presence: true
 
   belongs_to :user
@@ -36,11 +36,8 @@ class Micropost < ActiveRecord::Base
   scope :from_users_followed_by_or_in_reply_to, lambda { |user| followed_by_or_in_reply_to(user) }
 
   scope :messages, where(:private => true)
-  scope :privates, :messages
 
   scope :not_messages, where("(private = ?) OR (private IS NULL)", false)
-  scope :publics, :not_messages
-  scope :not_privates, :not_messages
 
   scope :to_or_from, lambda {|user| where("user_id=:id OR in_reply_to=:id", {:id=>user.id})}
 

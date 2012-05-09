@@ -1,6 +1,6 @@
 class MicropostsController < ApplicationController
 
-  before_filter :authenticate   # in session_helper.rb (shared with UsersController)
+  before_filter :authenticate, :except=>:index   # in session_helper.rb (shared with UsersController)
   before_filter :owner_user, :only => :destroy
 
   # POST /microposts
@@ -38,16 +38,19 @@ class MicropostsController < ApplicationController
   end
 
   # GET /users/:id/microposts
+  # GET /users/:id/microposts.rss
   # GET /users/:id/microposts.json
   def index
     @user=User.find_by_id(params[:user_id])
-    @microposts=@user.microposts.publics.paginate(:page => params[:page], :per_page => 5)
     respond_to do |format|
-      format.html 
-      format.json { render json: @microposts }
+      format.html { @microposts=@user.microposts.not_messages.paginate(:page => params[:page], :per_page => 5) }
+      format.rss { @microposts=@user.microposts.not_messages }
+      format.atom { @microposts=@user.microposts.not_messages }
+      format.json { @microposts=@user.microposts.not_messages
+                    render json: @microposts }
     end
-
   end
+
 
   private
 

@@ -4,6 +4,9 @@
     <title><%= title %></title>
     <!-- MME el js es necessari per a que funcionin les confirmacions al esborrar per exemple -->
     <%= javascript_include_tag "application" %>
+    <!-- MME es l'icon que surt a la barra de direccio -->
+    <%= auto_discovery_link_tag :rss %>
+    <%= auto_discovery_link_tag :atom %>
     <%= csrf_meta_tag %>
     <%= render 'layouts/stylesheets' %>
   </head>
